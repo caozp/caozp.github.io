@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="grep能使用正则表达式搜索文本，并把匹配的行打印出来。用于过滤&#x2F;搜索的特定字符">
+<meta property="og:type" content="article">
+<meta property="og:title" content="三剑客grep,sed和awk">
+<meta property="og:url" content="http://example.com/posts/e2f332a0/index.html">
+<meta property="og:site_name" content="Welcome">
+<meta property="og:description" content="grep能使用正则表达式搜索文本，并把匹配的行打印出来。用于过滤&#x2F;搜索的特定字符">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-04-10T13:22:06.000Z">
+<meta property="article:modified_time" content="2024-04-10T13:22:51.243Z">
+<meta property="article:author" content="Magic">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/posts/e2f332a0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>三剑客grep,sed和awk | Welcome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Welcome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/posts/e2f332a0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Magic">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Welcome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          三剑客grep,sed和awk
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-04-10 21:22:06 / 修改时间：21:22:51" itemprop="dateCreated datePublished" datetime="2024-04-10T21:22:06+08:00">2024-04-10</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h1><p>能使用正则表达式搜索文本，并把匹配的行打印出来。用于过滤&#x2F;搜索的特定字符</p>
+<span id="more"></span>
+<h2 id="grep命令常见用法"><a href="#grep命令常见用法" class="headerlink" title="grep命令常见用法"></a>grep命令常见用法</h2><p>在文件中搜索一个单词，命令会返回一个包含 <strong>“match_pattern”</strong> 的文本行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grep match_pattern file_name</span><br><span class="line">grep &quot;match_pattern&quot; file_name</span><br></pre></td></tr></table></figure>
+<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-c --count    # 计算符合范本样式的列数。</span><br><span class="line">-A &lt;显示行数&gt;   --after-context=&lt;显示行数&gt; # 除了显示符合范本样式的那一行之外，并显示该行之后的内容。</span><br><span class="line">-B&lt;显示行数&gt;   --before-context=&lt;显示行数&gt;   # 除了显示符合样式的那一行之外，并显示该行之前的内容。</span><br><span class="line">-C&lt;显示行数&gt; --context=&lt;显示行数&gt;或-&lt;显示行数&gt; # 除了显示符合范本样式的那一列之外，并显示该列之前后的内容。</span><br><span class="line">-q --quiet或--silent     # 不显示任何信息。</span><br><span class="line">-v --revert-match # 反转查找。</span><br><span class="line">-o # 只输出文件中匹配到的部分。</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>在多个文件中查找：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep &quot;match_pattern&quot; file_1 file_2 file_3 ...</span><br></pre></td></tr></table></figure>
+
+<p>输出除之外的所有行  <strong>-v</strong>  选项：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -v &quot;match_pattern&quot; file_name</span><br></pre></td></tr></table></figure>
+
+<p>只输出文件中匹配到的部分  <strong>-o</strong>  选项：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">echo this is a test line. | grep -o -E &quot;[a-z]+\.&quot;</span><br><span class="line">line.</span><br><span class="line"></span><br><span class="line">echo this is a test line. | egrep -o &quot;[a-z]+\.&quot;</span><br><span class="line">line.</span><br></pre></td></tr></table></figure>
+
+<p>统计文件或者文本中包含匹配字符串的行数  <strong>-c</strong>  选项：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep -c &quot;text&quot; file_name</span><br></pre></td></tr></table></figure>
+
+<p>输出包含匹配字符串的行数  <strong>-n</strong>  选项：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">grep &quot;text&quot; -n file_name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">或</span></span><br><span class="line">cat file_name | grep &quot;text&quot; -n</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">多个文件</span></span><br><span class="line">grep &quot;text&quot; -n file_1 file_2</span><br></pre></td></tr></table></figure>
+
+<p>在多级目录中对文本进行递归搜索：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grep &quot;text&quot; . -r -n</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">.表示当前目录。</span></span><br></pre></td></tr></table></figure>
+
+<p>选项  <strong>-e</strong>  制动多个匹配样式：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">echo this is a text line | grep -e &quot;is&quot; -e &quot;line&quot; -o</span><br><span class="line">is</span><br><span class="line">is</span><br><span class="line">line</span><br></pre></td></tr></table></figure>
+
+<p>在grep搜索结果中包括或者排除指定文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">只在目录中所有的.php和.html文件中递归搜索字符<span class="string">&quot;main()&quot;</span></span></span><br><span class="line">grep &quot;main()&quot; . -r --include *.&#123;php,html&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在搜索结果中排除所有README文件</span></span><br><span class="line">grep &quot;main()&quot; . -r --exclude &quot;README&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在搜索结果中排除filelist文件列表里的文件</span></span><br><span class="line">grep &quot;main()&quot; . -r --exclude-from filelist</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>grep静默输出：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">grep -q &quot;test&quot; filename</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">不会输出任何信息，如果命令运行成功返回0，失败则返回非0值。一般用于条件测试。</span></span><br><span class="line"></span><br><span class="line">if grep -q &#x27;test&#x27; filename;then</span><br><span class="line">  </span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<p>打印出匹配文本之前或者之后的行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示匹配某个结果之后的3行，使用 -A 选项：</span></span><br><span class="line">seq 10 | grep &quot;5&quot; -A 3</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示匹配某个结果之前的3行，使用 -B 选项：</span></span><br><span class="line">seq 10 | grep &quot;5&quot; -B 3</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示匹配某个结果的前三行和后三行，使用 -C 选项：</span></span><br><span class="line">seq 10 | grep &quot;5&quot; -C 3</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果匹配结果有多个，会用“--”作为各匹配结果之间的分隔符：</span></span><br><span class="line">echo -e &quot;a\nb\nc\na\nb\nc&quot; | grep a -A 1</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">--</span><br><span class="line">a</span><br><span class="line">b</span><br></pre></td></tr></table></figure>
+
+<h1 id="sed"><a href="#sed" class="headerlink" title="sed"></a>sed</h1><p><strong>sed</strong> 是一种流编辑器，它是文本处理中非常重要的工具，能够完美的配合正则表达式使用，功能不同凡响。处理时，把当前处理的行存储在临时缓冲区中，称为“模式空间”（pattern space），接着用sed命令处理缓冲区中的内容，处理完成后，把缓冲区的内容送往屏幕。接着处理下一行，这样不断重复，直到文件末尾。文件内容并没有 改变，除非你使用重定向存储输出。Sed主要用来自动编辑一个或多个文件；简化对文件的反复操作；编写转换程序等。</p>
+<p> <strong>命令格式</strong> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sed [options] &#x27;command&#x27; file(s)</span><br><span class="line">sed [options] -f scriptfile file(s)</span><br></pre></td></tr></table></figure>
+<h2 id="sed用法实例"><a href="#sed用法实例" class="headerlink" title="sed用法实例"></a>sed用法实例</h2><h3 id="打印奇数行或偶数行"><a href="#打印奇数行或偶数行" class="headerlink" title="打印奇数行或偶数行"></a>打印奇数行或偶数行</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sed -n &#x27;1~2p&#x27; test.txt  #奇数行</span><br><span class="line">sed -n &#x27;2~2p&#x27; test.txt  #偶数行</span><br></pre></td></tr></table></figure>
+
+<h3 id="替换操作：s命令"><a href="#替换操作：s命令" class="headerlink" title="替换操作：s命令"></a>替换操作：s命令</h3><p>替换文本中的字符串：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;s/book/books/&#x27; file</span><br></pre></td></tr></table></figure>
+
+<p> <strong>-n选项</strong> 和 <strong>p命令</strong> 一起使用表示只打印那些发生替换的行：</p>
+<p>sed -n ‘s&#x2F;test&#x2F;TEST&#x2F;p’ file</p>
+<p>直接编辑文件 <strong>选项-i</strong> ，会匹配file文件中每一行的所有book替换为books：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &#x27;s/book/books/g&#x27; file</span><br></pre></td></tr></table></figure>
+
+<h3 id="全面替换标记g"><a href="#全面替换标记g" class="headerlink" title="全面替换标记g"></a>全面替换标记g</h3><p>使用后缀 &#x2F;g 标记会替换每一行中的所有匹配：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;s/book/books/g&#x27; file</span><br></pre></td></tr></table></figure>
+
+<p>当需要从第N处匹配开始替换时，可以使用 &#x2F;Ng：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">echo sksksksksksk | sed &#x27;s/sk/SK/2g&#x27;</span><br><span class="line">skSKSKSKSKSK</span><br><span class="line"></span><br><span class="line">echo sksksksksksk | sed &#x27;s/sk/SK/3g&#x27;</span><br><span class="line">skskSKSKSKSK</span><br><span class="line"></span><br><span class="line">echo sksksksksksk | sed &#x27;s/sk/SK/4g&#x27;</span><br><span class="line">skskskSKSKSK</span><br></pre></td></tr></table></figure>
+
+<h3 id="定界符"><a href="#定界符" class="headerlink" title="定界符"></a>定界符</h3><p>以上命令中字符 &#x2F; 在sed中作为定界符使用，也可以使用任意的定界符：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;s:test:TEXT:g&#x27;</span><br><span class="line">sed &#x27;s|test|TEXT|g&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>定界符出现在样式内部时，需要进行转义：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;s/\/bin/\/usr\/local\/bin/g&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除操作：d命令"><a href="#删除操作：d命令" class="headerlink" title="删除操作：d命令"></a>删除操作：d命令</h3><p>删除空白行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;/^$/d&#x27; file</span><br></pre></td></tr></table></figure>
+<p>删除文件的第2行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;2d&#x27; file</span><br><span class="line">sed &#x27;2d;5d&#x27; file</span><br></pre></td></tr></table></figure>
+<p>删除文件的第2行到末尾所有行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;2,$d&#x27; file</span><br></pre></td></tr></table></figure>
+<p>删除文件最后一行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;$d&#x27; file</span><br></pre></td></tr></table></figure>
+<p>删除文件中所有开头是test的行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;/^test/&#x27;d file</span><br></pre></td></tr></table></figure>
+<h3 id="已匹配字符串标记"><a href="#已匹配字符串标记" class="headerlink" title="已匹配字符串标记&amp;"></a>已匹配字符串标记&amp;</h3><p>正则表达式 \w+ 匹配每一个单词，使用 [&amp;] 替换它，&amp; 对应于之前所匹配到的单词：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo this is a test line | sed &#x27;s/\w\+/[&amp;]/g&#x27;</span><br><span class="line">[this] [is] [a] [test] [line]</span><br></pre></td></tr></table></figure>
+
+<p>所有以192.168.0.1开头的行都会被替换成它自已加localhost：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;s/^192.168.0.1/&amp;localhost/&#x27; file</span><br><span class="line">192.168.0.1localhost</span><br></pre></td></tr></table></figure>
+
+<h3 id="子串匹配标记-1"><a href="#子串匹配标记-1" class="headerlink" title="子串匹配标记\1"></a>子串匹配标记\1</h3><p>匹配给定样式的其中一部分：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo this is digit 7 in a number | sed &#x27;s/digit \([0-9]\)/\1/&#x27;</span><br><span class="line">this is 7 in a number</span><br></pre></td></tr></table></figure>
+
+<p>命令中 digit 7，被替换成了 7。样式匹配到的子串是 7，(..) 用于匹配子串，对于匹配到的第一个子串就标记为  <strong>\1</strong> ，依此类推匹配到的第二个结果就是  <strong>\2</strong> ，例如：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo aaa BBB | sed &#x27;s/\([a-z]\+\) \([A-Z]\+\)/\2 \1/&#x27;</span><br><span class="line">BBB aaa</span><br></pre></td></tr></table></figure>
+
+<p>love被标记为1，所有loveable会被替换成lovers，并打印出来：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -n &#x27;s/\(love\)able/\1rs/p&#x27; file</span><br></pre></td></tr></table></figure>
+
+<p>通过替换获取ip：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ifconfig ens32 | sed -n &#x27;/inet /p&#x27; | sed &#x27;s/inet \([0-9.]\+\).*/\1/&#x27;</span><br><span class="line">192.168.75.126</span><br></pre></td></tr></table></figure>
+<h3 id="大小写转换U-L"><a href="#大小写转换U-L" class="headerlink" title="大小写转换U&#x2F;L"></a>大小写转换U&#x2F;L</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">\u：	首字母转换为大写</span><br><span class="line">\U：  全部转换为大写</span><br><span class="line">\l：	 首字母转换为小写</span><br><span class="line">\L：	 全部转换为小写</span><br></pre></td></tr></table></figure>
+
+<p>首字母转换为大写：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@node6 ~]# sed &#x27;s/^[a-z]\+/\u&amp;/&#x27; passwd </span><br><span class="line">Root:x:0:0:root:/root:/bin/bash</span><br><span class="line">Bin:x:1:1:bin:/bin:/sbin/nologin</span><br><span class="line">Daemon:x:2:2:daemon:/sbin:/sbin/nologin</span><br><span class="line">Adm:x:3:4:adm:/var/adm:/sbin/nologin</span><br><span class="line">Lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin</span><br><span class="line">Sync:x:5:0:sync:/sbin:/bin/sync</span><br></pre></td></tr></table></figure>
+
+<p>匹配到的字符全部转换为大写：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@node6 ~]# sed &#x27;s/^[a-z]\+/\U&amp;/&#x27; passwd </span><br><span class="line">ROOT:x:0:0:root:/root:/bin/bash</span><br><span class="line">BIN:x:1:1:bin:/bin:/sbin/nologin</span><br></pre></td></tr></table></figure>
+
+<h3 id="组合多个表达式"><a href="#组合多个表达式" class="headerlink" title="组合多个表达式"></a>组合多个表达式</h3><ol>
+<li>替换文本中的多个字符串：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -e &#x27;s/old_string/new_string/g&#x27; -e &#x27;s/another_old_string/another_new_string/g&#x27; file.txt</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>删除文本中的多个行：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -e &#x27;1d&#x27; -e &#x27;/pattern/d&#x27; file.txt</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>在文本中插入多个行：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -e &#x27;1i\inserted_line1&#x27; -e &#x27;2i\inserted_line2&#x27; file.txt</span><br></pre></td></tr></table></figure>
+
+<p>其中，-e 表示指定一个表达式，多个表达式之间用 -e 分隔。每个表达式可以是一个 sed 命令，例如 s、d、i 等。</p>
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p>sed表达式可以使用单引号来引用，但是如果表达式内部包含变量字符串，就需要使用双引号。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">test=hello</span><br><span class="line">echo hello WORLD | sed &quot;s/$test/HELLO&quot;</span><br><span class="line">HELLO WORLD</span><br></pre></td></tr></table></figure>
+
+<h3 id="选定行的范围：-（逗号）"><a href="#选定行的范围：-（逗号）" class="headerlink" title="选定行的范围：,（逗号）"></a>选定行的范围：,（逗号）</h3><p>所有在模板test和check所确定的范围内的行都被打印：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -n &#x27;/test/,/check/p&#x27; file</span><br></pre></td></tr></table></figure>
+
+<p>打印从第5行开始到第一个包含以test开始的行之间的所有行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -n &#x27;5,/^test/p&#x27; file</span><br></pre></td></tr></table></figure>
+
+<p>对于模板test和west之间的行，每行的末尾用字符串aaa bbb替换：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;/test/,/west/s/$/aaa bbb/&#x27; file</span><br></pre></td></tr></table></figure>
+
+<h3 id="多点编辑：e命令"><a href="#多点编辑：e命令" class="headerlink" title="多点编辑：e命令"></a>多点编辑：e命令</h3><p>-e选项允许在同一行里执行多条命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sed -e &#x27;1,5d&#x27; -e &#x27;s/test/check/&#x27; file</span><br><span class="line"></span><br><span class="line">echo &quot;hello, world &quot; | cut -d&#x27;,&#x27; -f2 | sed -e &#x27;s/^[[:space:]]*//&#x27; -e &#x27;s/[[:space:]]*$//&#x27;</span><br><span class="line">去除单词前面跟后面的空格</span><br><span class="line"></span><br><span class="line">echo &quot; key = value &quot;|cut -d &#x27;=&#x27; -f 2|sed -e &#x27;s/^[[:space:]]*//&#x27; -e &#x27;s/[[:space:]]*$//&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>上面sed表达式的第一条命令删除1至5行，第二条命令用check替换test。命令的执行顺序对结果有影响。如果两个命令都是替换命令，那么第一个替换命令将影响第二个替换命令的结果。</p>
+<h3 id="追加（行下）：a-命令"><a href="#追加（行下）：a-命令" class="headerlink" title="追加（行下）：a\命令"></a>追加（行下）：a\命令</h3><p>将 this is a test line 追加到 以test 开头的行后面：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;/^test/a\this is a test line&#x27; file</span><br></pre></td></tr></table></figure>
+
+<p>在 test.conf 文件第2行之后插入 this is a test line：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &#x27;2a\this is a test line&#x27; test.conf</span><br></pre></td></tr></table></figure>
+
+<h3 id="插入（行上）：i-命令"><a href="#插入（行上）：i-命令" class="headerlink" title="插入（行上）：i\命令"></a>插入（行上）：i\命令</h3><p>将 this is a test line 追加到以test开头的行前面：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed &#x27;/^test/i\this is a test line&#x27; file</span><br></pre></td></tr></table></figure>
+
+<p>在test.conf文件第5行之前插入this is a test line：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &#x27;5i\this is a test line&#x27; test.conf</span><br></pre></td></tr></table></figure>
+
+<h1 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h1><p><strong>awk</strong> 是一种编程语言，用于在linux&#x2F;unix下对文本和数据进行处理。数据可以来自标准输入(stdin)、一个或多个文件，或其它命令的输出。它支持用户自定义函数和动态正则表达式等先进功能，是linux&#x2F;unix下的一个强大编程工具。它在命令行中使用，但更多是作为脚本来使用。awk有很多内建的功能，比如数组、函数等，这是它和C语言的相同之处，灵活性是awk最大的优势。</p>
+<h2 id="awk命令格式和选项"><a href="#awk命令格式和选项" class="headerlink" title="awk命令格式和选项"></a>awk命令格式和选项</h2><p><strong>语法形式</strong> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">awk [options] &#x27;script&#x27; var=value file(s)</span><br><span class="line">awk [options] -f scriptfile var=value file(s)</span><br></pre></td></tr></table></figure>
+
+<p><strong>常用命令选项</strong> </p>
+<ul>
+<li><strong>-F fs</strong> fs指定输入分隔符，fs可以是字符串或正则表达式，如-F:，默认的分隔符是连续的空格或制表符</li>
+<li><strong>-v var&#x3D;value</strong> 赋值一个用户定义变量，将外部变量传递给awk</li>
+<li><strong>-f scripfile</strong> 从脚本文件中读取awk命令</li>
+</ul>
+<h3 id="模式"><a href="#模式" class="headerlink" title="模式"></a>模式</h3><p>模式可以是以下任意一个：</p>
+<ul>
+<li>&#x2F;正则表达式&#x2F;：使用通配符的扩展集。</li>
+<li>关系表达式：使用运算符进行操作，可以是字符串或数字的比较测试。</li>
+<li>模式匹配表达式：用运算符<code>~</code>（匹配）和<code>!~</code>（不匹配）。</li>
+<li>BEGIN语句块、pattern语句块、END语句块：参见awk的工作原理</li>
+</ul>
+<h2 id="awk脚本基本结构"><a href="#awk脚本基本结构" class="headerlink" title="awk脚本基本结构"></a>awk脚本基本结构</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk &#x27;BEGIN&#123; print &quot;start&quot; &#125; pattern&#123; commands &#125; END&#123; print &quot;end&quot; &#125;&#x27; file</span><br></pre></td></tr></table></figure>
+
+<p>一个awk脚本通常由：BEGIN语句块、能够使用模式匹配的通用语句块、END语句块3部分组成，这三个部分是可选的。任意一个部分都可以不出现在脚本中，脚本通常是被 <strong>单引号</strong> 中，例如：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk &#x27;BEGIN&#123; i=0 &#125; &#123; i++ &#125; END&#123; print i &#125;&#x27; filename</span><br></pre></td></tr></table></figure>
+
+<h3 id="awk的工作原理"><a href="#awk的工作原理" class="headerlink" title="awk的工作原理"></a>awk的工作原理</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk &#x27;BEGIN&#123; commands &#125; pattern&#123; commands &#125; END&#123; commands &#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第一步：执行<code>BEGIN&#123; commands &#125;</code>语句块中的语句；</li>
+<li>第二步：从文件或标准输入(stdin)读取一行，然后执行<code>pattern&#123; commands &#125;</code>语句块，它逐行扫描文件，从第一行到最后一行重复这个过程，直到文件全部被读取完毕。</li>
+<li>第三步：当读至输入流末尾时，执行<code>END&#123; commands &#125;</code>语句块。</li>
+</ul>
+<p> <strong>BEGIN语句块</strong> 在awk开始从输入流中读取行 <strong>之前</strong> 被执行，这是一个可选的语句块，比如变量初始化、打印输出表格的表头等语句通常可以写在BEGIN语句块中。</p>
+<p> <strong>END语句块</strong> 在awk从输入流中读取完所有的行 <strong>之后</strong> 即被执行，比如打印所有行的分析结果这类信息汇总都是在END语句块中完成，它也是一个可选语句块。</p>
+<p> <strong>pattern语句块</strong> 中的通用命令是最重要的部分，它也是可选的。如果没有提供pattern语句块，则默认执行<code>&#123; print &#125;</code>，即打印每一个读取到的行，awk读取的每一行都会执行该语句块。</p>
+<p> <strong>示例</strong> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">echo -e &quot;A line 1\nA line 2&quot; | awk &#x27;BEGIN&#123; print &quot;Start&quot; &#125; &#123; print &#125; END&#123; print &quot;End&quot; &#125;&#x27;</span><br><span class="line">Start</span><br><span class="line">A line 1</span><br><span class="line">A line 2</span><br><span class="line">End</span><br></pre></td></tr></table></figure>
+
+<p>当使用不带参数的<code>print</code>时，它就打印当前行，当<code>print</code>的参数是以逗号进行分隔时，打印时则以空格作为定界符。在awk的print语句块中双引号是被当作拼接符使用，例如：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo | awk &#x27;&#123; var1=&quot;v1&quot;; var2=&quot;v2&quot;; var3=&quot;v3&quot;; print var1,var2,var3; &#125;&#x27; </span><br><span class="line">v1 v2 v3</span><br></pre></td></tr></table></figure>
+
+<p>双引号拼接使用：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo | awk &#x27;&#123; var1=&quot;v1&quot;; var2=&quot;v2&quot;; var3=&quot;v3&quot;; print var1&quot;=&quot;var2&quot;=&quot;var3; &#125;&#x27;</span><br><span class="line">v1=v2=v3</span><br></pre></td></tr></table></figure>
+
+<p>{ }类似一个循环体，会对文件中的每一行进行迭代，通常变量初始化语句（如：i&#x3D;0）以及打印文件头部的语句放入BEGIN语句块中，将打印的结果等语句放在END语句块中。</p>
+<h2 id="awk内置变量（预定义变量）"><a href="#awk内置变量（预定义变量）" class="headerlink" title="awk内置变量（预定义变量）"></a>awk内置变量（预定义变量）</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">**$n**  当前记录的第n个字段，比如n为1表示第一个字段，n为2表示第二个字段。 </span><br><span class="line">**$0**  这个变量包含执行过程中当前行的文本内容。</span><br><span class="line"></span><br><span class="line">**FILENAME**  当前输入文件的名。</span><br><span class="line">**FS**  字段分隔符（默认是任何空格）。</span><br><span class="line">**NF**  表示字段数，在执行过程中对应于当前的字段数。</span><br><span class="line">**NR**  表示记录数，在执行过程中对应于当前的行号。</span><br><span class="line">**OFMT**  数字的输出格式（默认值是%.6g）。</span><br><span class="line">**OFS**  输出字段分隔符（默认值是一个空格）。</span><br><span class="line">**ORS**  输出记录分隔符（默认值是一个换行符）。</span><br><span class="line">**RS**  记录分隔符（默认是一个换行符）。</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例</strong> </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">echo -e &quot;line1 f2 f3\nline2 f4 f5\nline3 f6 f7&quot; | awk &#x27;&#123;print &quot;Line No:&quot;NR&quot;, No of fields:&quot;NF, &quot;$0=&quot;$0, &quot;$1=&quot;$1, &quot;$2=&quot;$2, &quot;$3=&quot;$3&#125;&#x27; </span><br><span class="line">Line No:1, No of fields:3 $0=line1 f2 f3 $1=line1 $2=f2 $3=f3</span><br><span class="line">Line No:2, No of fields:3 $0=line2 f4 f5 $1=line2 $2=f4 $3=f5</span><br><span class="line">Line No:3, No of fields:3 $0=line3 f6 f7 $1=line3 $2=f6 $3=f7</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>print $NF</code>可以打印出一行中的最后一个字段，使用<code>$(NF-1)</code>则是打印倒数第二个字段，其他以此类推：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo -e &quot;line1 f2 f3\n line2 f4 f5&quot; | awk &#x27;&#123;print $NF&#125;&#x27;</span><br><span class="line">f3</span><br><span class="line">f5</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">echo -e &quot;line1 f2 f3\n line2 f4 f5&quot; | awk &#x27;&#123;print $(NF-1)&#125;&#x27;</span><br><span class="line">f2</span><br><span class="line">f4</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>打印每一行的第二和第三个字段：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk &#x27;&#123; print $2,$3 &#125;&#x27; filename</span><br></pre></td></tr></table></figure>
+
+<p>统计文件中的行数：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk &#x27;END&#123; print NR &#125;&#x27; filename</span><br></pre></td></tr></table></figure>
+
+<p>以上命令只使用了END语句块，在读入每一行的时，awk会将NR更新为对应的行号，当到达最后一行NR的值就是最后一行的行号，所以END语句块中的NR就是文件的行数。</p>
+<p>一个每一行中第一个字段值累加的例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">seq 5 | awk &#x27;BEGIN&#123; sum=0; print &quot;总和：&quot; &#125; &#123; print $1&quot;+&quot;; sum+=$1 &#125; END&#123; print &quot;等于&quot;; print sum &#125;&#x27; </span><br><span class="line">总和：</span><br><span class="line">1+</span><br><span class="line">2+</span><br><span class="line">3+</span><br><span class="line">4+</span><br><span class="line">5+</span><br><span class="line">等于</span><br><span class="line">15</span><br></pre></td></tr></table></figure>
+
+<h2 id="将外部变量值传递给awk"><a href="#将外部变量值传递给awk" class="headerlink" title="将外部变量值传递给awk"></a>将外部变量值传递给awk</h2><p>借助 <strong><code>-v</code>选项</strong> ，可以将外部值（并非来自stdin）传递给awk：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">VAR=10000</span><br><span class="line">echo | awk -v VARIABLE=$VAR &#x27;&#123; print VARIABLE &#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>另一种传递外部变量方法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var1=&quot;aaa&quot;</span><br><span class="line">var2=&quot;bbb&quot;</span><br><span class="line">echo | awk &#x27;&#123; print v1,v2 &#125;&#x27; v1=$var1 v2=$var2</span><br></pre></td></tr></table></figure>
+
+<p>当输入来自于文件时使用：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk &#x27;&#123; print v1,v2 &#125;&#x27; v1=$var1 v2=$var2 filename</span><br></pre></td></tr></table></figure>
+
+<p>以上方法中，变量之间用空格分隔作为awk的命令行参数跟随在BEGIN、{}和END语句块之后。</p>
+<h2 id="查找进程pid"><a href="#查找进程pid" class="headerlink" title="查找进程pid"></a>查找进程pid</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -antup | grep 7770 | awk &#x27;&#123; print $NF NR&#125;&#x27; | awk &#x27;&#123; print $1&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/2f57a694/" rel="prev" title="正则表达式">
+      <i class="fa fa-chevron-left"></i> 正则表达式
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#grep"><span class="nav-number">1.</span> <span class="nav-text">grep</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#grep%E5%91%BD%E4%BB%A4%E5%B8%B8%E8%A7%81%E7%94%A8%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">grep命令常见用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.3.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sed"><span class="nav-number">2.</span> <span class="nav-text">sed</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sed%E7%94%A8%E6%B3%95%E5%AE%9E%E4%BE%8B"><span class="nav-number">2.1.</span> <span class="nav-text">sed用法实例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%93%E5%8D%B0%E5%A5%87%E6%95%B0%E8%A1%8C%E6%88%96%E5%81%B6%E6%95%B0%E8%A1%8C"><span class="nav-number">2.1.1.</span> <span class="nav-text">打印奇数行或偶数行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%BF%E6%8D%A2%E6%93%8D%E4%BD%9C%EF%BC%9As%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.2.</span> <span class="nav-text">替换操作：s命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E9%9D%A2%E6%9B%BF%E6%8D%A2%E6%A0%87%E8%AE%B0g"><span class="nav-number">2.1.3.</span> <span class="nav-text">全面替换标记g</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%95%8C%E7%AC%A6"><span class="nav-number">2.1.4.</span> <span class="nav-text">定界符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%93%8D%E4%BD%9C%EF%BC%9Ad%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.5.</span> <span class="nav-text">删除操作：d命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%B2%E5%8C%B9%E9%85%8D%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%A0%87%E8%AE%B0"><span class="nav-number">2.1.6.</span> <span class="nav-text">已匹配字符串标记&amp;</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E4%B8%B2%E5%8C%B9%E9%85%8D%E6%A0%87%E8%AE%B0-1"><span class="nav-number">2.1.7.</span> <span class="nav-text">子串匹配标记\1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%A7%E5%B0%8F%E5%86%99%E8%BD%AC%E6%8D%A2U-L"><span class="nav-number">2.1.8.</span> <span class="nav-text">大小写转换U&#x2F;L</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E5%A4%9A%E4%B8%AA%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">2.1.9.</span> <span class="nav-text">组合多个表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">2.1.10.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%89%E5%AE%9A%E8%A1%8C%E7%9A%84%E8%8C%83%E5%9B%B4%EF%BC%9A-%EF%BC%88%E9%80%97%E5%8F%B7%EF%BC%89"><span class="nav-number">2.1.11.</span> <span class="nav-text">选定行的范围：,（逗号）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%82%B9%E7%BC%96%E8%BE%91%EF%BC%9Ae%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.12.</span> <span class="nav-text">多点编辑：e命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%BD%E5%8A%A0%EF%BC%88%E8%A1%8C%E4%B8%8B%EF%BC%89%EF%BC%9Aa-%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.13.</span> <span class="nav-text">追加（行下）：a\命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E5%85%A5%EF%BC%88%E8%A1%8C%E4%B8%8A%EF%BC%89%EF%BC%9Ai-%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.14.</span> <span class="nav-text">插入（行上）：i\命令</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#awk"><span class="nav-number">3.</span> <span class="nav-text">awk</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#awk%E5%91%BD%E4%BB%A4%E6%A0%BC%E5%BC%8F%E5%92%8C%E9%80%89%E9%A1%B9"><span class="nav-number">3.1.</span> <span class="nav-text">awk命令格式和选项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.1.1.</span> <span class="nav-text">模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#awk%E8%84%9A%E6%9C%AC%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="nav-number">3.2.</span> <span class="nav-text">awk脚本基本结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#awk%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">3.2.1.</span> <span class="nav-text">awk的工作原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#awk%E5%86%85%E7%BD%AE%E5%8F%98%E9%87%8F%EF%BC%88%E9%A2%84%E5%AE%9A%E4%B9%89%E5%8F%98%E9%87%8F%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">awk内置变量（预定义变量）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%86%E5%A4%96%E9%83%A8%E5%8F%98%E9%87%8F%E5%80%BC%E4%BC%A0%E9%80%92%E7%BB%99awk"><span class="nav-number">3.4.</span> <span class="nav-text">将外部变量值传递给awk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E8%BF%9B%E7%A8%8Bpid"><span class="nav-number">3.5.</span> <span class="nav-text">查找进程pid</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Magic</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Magic</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+</html>
