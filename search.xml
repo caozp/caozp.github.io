@@ -123,4 +123,507 @@
         <category>Hexo</category>
       </categories>
   </entry>
+  <entry>
+    <title>shell脚本基础知识点</title>
+    <url>/posts/acba6a0c/</url>
+    <content><![CDATA[<h1 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>shell变量定义要求:</p>
+<ul>
+<li>首个字符必须为字母</li>
+<li>中间不能有空格，可以使用下划线，<strong>等号左右也不能有空格</strong></li>
+<li>不能使用标点符号</li>
+<li>不能使用bash里的关键字</li>
+</ul>
+<span id="more"></span>
+
+<p>访问:在 Shell 中，访问变量的值,需要使用 $ 符号加上变量名即可。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">your_var=&quot;this is a new line&quot;</span><br><span class="line">echo $your_var</span><br><span class="line">echo $&#123;your_var&#125;</span><br></pre></td></tr></table></figure>
+<p>如果某个变量未设置，那么就使用默认值</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">&#123;parameter-default&#125; 或者 <span class="variable">$&#123;parameter:-default&#125;</span></span></span><br><span class="line"></span><br><span class="line">default=$&#123;HOME-`whoami`&#125;</span><br><span class="line">echo $default</span><br></pre></td></tr></table></figure>
+
+<h2 id="只读变量readonly"><a href="#只读变量readonly" class="headerlink" title="只读变量readonly"></a>只读变量readonly</h2><p>在变量前加上readonly，变量不可以被重新赋值</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">readonly github</span><br><span class="line">github=&quot;https://www.github.com&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除变量unset"><a href="#删除变量unset" class="headerlink" title="删除变量unset"></a>删除变量unset</h2><p>变量被删除后不能再次使用。unset 命令不能删除只读变量。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">var=&quot;abc&quot;</span><br><span class="line">unset var</span><br><span class="line">echo $var  # unset后的变量,再次访问就为空</span><br></pre></td></tr></table></figure>
+
+<h2 id="命令结果赋值给变量"><a href="#命令结果赋值给变量" class="headerlink" title="命令结果赋值给变量"></a>命令结果赋值给变量</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">variable=`command`</span><br><span class="line">variable=$(command)</span><br></pre></td></tr></table></figure>
+<p>例子1.获取远程的所有分支名</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">REMOTE_BRANCHES=$(git branch -r)</span><br><span class="line">for remote_branch in $&#123;REMOTE_BRANCHES[*]&#125;</span><br><span class="line">do</span><br><span class="line">  echo $&#123;remote_branch&#125;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<p>例子2.获取当前的分支名</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Default_Branch=$(git rev-parse --abbrev-ref HEAD)</span><br></pre></td></tr></table></figure>
+
+<h1 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h1><h2 id="引号"><a href="#引号" class="headerlink" title="引号"></a>引号</h2><p>使用单引号和使用双引号也是有区别的。<strong>单引号不会转义，原样输出; 双引号会读取变量</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">字符串为双引号时</span><br><span class="line">export STRING=&quot;$HOME&quot;</span><br><span class="line">echo &#x27;$STRING&#x27;    -&gt; $STRING</span><br><span class="line">export STRING=&quot;$HOME&quot;</span><br><span class="line">echo &quot;$STRING&quot;    -&gt; /home/apple</span><br><span class="line"></span><br><span class="line">字符串为单引号时</span><br><span class="line">export STRING=&#x27;$HOME&#x27;</span><br><span class="line">echo &#x27;$STRING&#x27;    -&gt; $STRING</span><br><span class="line">export STRING=&#x27;$HOME&#x27;</span><br><span class="line">echo &quot;$STRING&quot;    -&gt; $HOME</span><br></pre></td></tr></table></figure>
+
+<h2 id="转义符号"><a href="#转义符号" class="headerlink" title="转义符号"></a>转义符号</h2><p>在Shell中，转义字符是一个特殊字符，用于表示一些特殊的含义。例如插入换行符、制表符、引号等。在Shell命令中，可以使用<strong>反斜杠</strong>来指示后面的字符应该被当做普通字符处理，而不是具有特殊含义。</p>
+<p>以下是一些常见的转义字符：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">\n：表示换行符，用于在字符串中插入一个新行。</span><br><span class="line">\t：表示制表符，用于在字符串中插入一个制表符。</span><br><span class="line">\&quot;：表示双引号，用于在字符串中插入一个双引号。</span><br><span class="line">\&#x27;：表示单引号，用于在字符串中插入一个单引号。</span><br><span class="line">\\：表示反斜杠，用于在字符串中插入一个反斜杠。</span><br></pre></td></tr></table></figure>
+<p>例如，如果我们想在一个字符串中插入一个双引号，可以使用转义字符\来表示：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export STRING=&quot;\&quot;hello\&quot; world&quot;</span><br><span class="line">echo $STRING    </span><br><span class="line">&quot;hello&quot; world</span><br></pre></td></tr></table></figure>
+<p>又或者，我们想在字符串中加入换行符</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">STRING=&quot;hello\n world&quot;</span><br><span class="line">-&gt; % echo $STRING</span><br><span class="line">hello</span><br><span class="line"> world</span><br></pre></td></tr></table></figure>
+
+<h2 id="字符串长度"><a href="#字符串长度" class="headerlink" title="字符串长度"></a>字符串长度</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">&#123;<span class="comment">#var&#125; 可以表示字符串长度，也就是字符的个数</span></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% string=<span class="string">&quot;helloworld&quot;</span></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% <span class="built_in">echo</span> <span class="variable">$&#123;#string&#125;</span></span></span><br><span class="line">10 </span><br></pre></td></tr></table></figure>
+
+<h2 id="字符串切割"><a href="#字符串切割" class="headerlink" title="字符串切割"></a>字符串切割</h2><h3 id="按下标切割"><a href="#按下标切割" class="headerlink" title="按下标切割"></a>按下标切割</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">&#123;string: start&#125;</span>        </span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">&#123;string: start :length&#125;</span> </span><br><span class="line">start -- 起始位置，从左边开始，字符串第一个索引是0</span><br><span class="line">length -- 长度。没有length的时候，默认到结尾</span><br></pre></td></tr></table></figure>
+<p>从第二个字符截取到结尾</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">string=&quot;This is a line&quot;</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">&#123;string:2&#125;        -&gt;  is is a line</span></span><br></pre></td></tr></table></figure>
+<p>从第二个字符截取4个字符</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">string=&quot;This is a line&quot;</span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">&#123;string:2:4&#125;        -&gt;  is i</span></span><br></pre></td></tr></table></figure>
+<p><strong>也可以从右边下标开始计数</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">&#123;string: 0-start :length&#125;</span></span><br></pre></td></tr></table></figure>
+<p>从右边开始计数时，起始下标数字是 1</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; % string=&quot;This is a line&quot;</span><br><span class="line"></span><br><span class="line">-&gt; % echo $&#123;string:0-4&#125;</span><br><span class="line">line   # 表示截取最末尾四个字符</span><br><span class="line">-&gt; % echo $&#123;string:0-4:2&#125;</span><br><span class="line">li</span><br><span class="line">-&gt; % echo $&#123;string:0-1&#125;</span><br><span class="line">e</span><br></pre></td></tr></table></figure>
+
+<h3 id="匹配Pattern切割"><a href="#匹配Pattern切割" class="headerlink" title="匹配Pattern切割"></a>匹配Pattern切割</h3><p>${var#Pattern}, ${var##Pattern}：删除从$var前端开始的最短或最长匹配Pattern的字符串。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$&#123;string#*chars&#125; </span><br><span class="line">从 string 字符串第一次出现 *chars 的位置开始，截取 *chars 右边的所有字符</span><br><span class="line"></span><br><span class="line">$&#123;string##*chars&#125; </span><br><span class="line">从 string 字符串最后一次出现 *chars 的位置开始，截取 *chars 右边的所有字符。</span><br><span class="line"></span><br><span class="line">$&#123;string%chars*&#125;  </span><br><span class="line">从 string 字符串第一次出现 *chars 的位置开始，截取 chars 左边的所有字符。</span><br><span class="line"></span><br><span class="line">$&#123;string%%chars*&#125; </span><br><span class="line">从 string 字符串最后一次出现 *chars 的位置开始，截取 chars 左边的所有字符。</span><br></pre></td></tr></table></figure>
+
+<p>案例</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">示例，按 _ 分割</span><br><span class="line">var=1_2_3_4_5</span><br><span class="line"></span><br><span class="line">echo $&#123;var#*_&#125;    结果为2_3_4_5  去掉 从左边开始 到第一个字符 &#x27;_&#x27; 之间的内容</span><br><span class="line"></span><br><span class="line">echo $&#123;var##*_&#125;   结果为5        去掉 从左边开始 到最后一个字符 &#x27;_&#x27; 之间的内容</span><br><span class="line"></span><br><span class="line">echo $&#123;var%_*&#125;    结果为1_2_3_4  去掉 从右边开始 到第一个字符 &#x27;_&#x27; 之间的内容</span><br><span class="line"></span><br><span class="line">echo $&#123;var%%_*&#125;   结果为1        去掉 从右边开始 到最后一个字符 &#x27;_&#x27; 之间的内容</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">练习:</span><br><span class="line">file=a/b/c/d/e</span><br><span class="line">echo $&#123;file##*/&#125;</span><br><span class="line">echo $&#123;file#*/&#125;</span><br><span class="line">echo $&#123;file%%/*&#125;</span><br><span class="line">echo $&#123;file%/*&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="cut切割"><a href="#cut切割" class="headerlink" title="cut切割"></a>cut切割</h3><p>案例1，使用cut命令</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; cat /etc/passwd|head -n 5|cut -d : -f 1|sed -n &quot;1p&quot;</span><br><span class="line">root</span><br></pre></td></tr></table></figure>
+<h3 id="awk切割"><a href="#awk切割" class="headerlink" title="awk切割"></a>awk切割</h3><p>案例1，使用awk命令,根据github pr获取pr对应的改动文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -H &quot;Accept: application/vnd.github+json&quot; -H &quot;Authorization: Bearer $1&quot; https://url/pulls/$2/files | grep &#x27;&quot;filename&quot;:&#x27;|awk -F &#x27;&quot;&#x27; &#x27;&#123;print $4&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<h2 id="多行字符串"><a href="#多行字符串" class="headerlink" title="多行字符串"></a>多行字符串</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">var=$(cat &lt;&lt;- EOF</span><br><span class="line">this is first line</span><br><span class="line">this is second line</span><br><span class="line">EOF</span><br><span class="line">)</span><br><span class="line">echo &quot;$var&quot;  # 此处一定要加引号，否则只会单行显示</span><br><span class="line"></span><br><span class="line">#生成json数据后，通过post命令请求url</span><br><span class="line">generate_post_data()</span><br><span class="line">&#123;</span><br><span class="line">cat &lt;&lt;EOF</span><br><span class="line">&#123;</span><br><span class="line">&quot;tag_name&quot;: &quot;$tag&quot;,</span><br><span class="line">&quot;target_commitish&quot;: &quot;$branch&quot;</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line">&#125;</span><br><span class="line">curl -H &quot;$AUTH&quot; -H &quot;Content-Type: application/json&quot; --request POST --data &quot;$(generate_post_data)&quot; &quot;https://github.com/api/v3/repos/$owner/$repo/releases&quot;</span><br></pre></td></tr></table></figure>
+<p>EOF是“End Of File”的缩写，表示文件结束的标记。在Shell中，EOF通常用于指定一个多行输入的结束标记，例如在输入脚本或命令时。</p>
+<p>在Shell中，EOF后面的文本会被视为输入的内容，直到遇到一个与EOF内容相同的行为止。这个标记通常用于输入多行文本，例如在创建一个新文件时，需要输入文件内容，可以使用EOF来指定输入的结束标记。</p>
+<h1 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h1><p>用括号来表示数组，数组元素用”<strong>空格</strong>“符号分割开</p>
+<p>array&#x3D;(v1 v2 v3 v4)</p>
+<p>读取某个元素: ${数组名[下标]}</p>
+<p>使用 @ 符号可以获取数组中的所有元素: ${array[@]}</p>
+<h2 id="数组长度"><a href="#数组长度" class="headerlink" title="数组长度"></a>数组长度</h2><p>我们要获取数组的长度，<strong>我们需要使用 @ 或者 * 将数组扩展成列表，然后再次使用 # 获取数组的长度。</strong> </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$&#123;#array_name[@]&#125;</span><br><span class="line">$&#123;#array_name[*]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>案例</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; % array=(a b c d e f)</span><br><span class="line">-&gt; % echo $&#123;array[3]&#125;       </span><br><span class="line">d</span><br><span class="line">-&gt; % echo $&#123;array[@]&#125;       </span><br><span class="line">a b c d e f</span><br><span class="line">-&gt; % echo $&#123;#array[@]&#125;</span><br><span class="line">6</span><br><span class="line">-&gt; % echo $&#123;#array[*]&#125;</span><br><span class="line">6</span><br></pre></td></tr></table></figure>
+
+<h1 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h1><p>把一个命令的输出作为下一个命令的输入，以这种方式连接的两个或者多个命令就形成了管道</p>
+<p>Linux 管道使用竖线|连接多个命令，这被称为管道符。Linux 管道的具体语法格式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">command1 | command2</span><br><span class="line">command1 | command2 [ | commandN... ]</span><br></pre></td></tr></table></figure>
+
+<p>案例</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls -al|grep file</span><br></pre></td></tr></table></figure>
+
+<p>使用xargs占位符, 找到文件中的minSdkVersion并替换</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">grep &#x27;minSdkVersion&#x27; build.gradle |xargs -I &#123;&#125; sed -i &quot;s/&#123;&#125;/minSdkVersion 23/g&quot; build.gradle</span><br></pre></td></tr></table></figure>
+
+<h1 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h1><h2 id="输出重定向"><a href="#输出重定向" class="headerlink" title="输出重定向"></a>输出重定向</h2><p>重定向操作符&gt;将命令与文件连接起来，用文件来接收命令的输出；</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">command &gt; file</span><br></pre></td></tr></table></figure>
+<p>在输出重定向中，&gt;代表的是覆盖，&gt;&gt;代表的是追加。</p>
+<h2 id="输入重定向"><a href="#输入重定向" class="headerlink" title="输入重定向"></a>输入重定向</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">command1 &lt; input.txt | command2</span><br></pre></td></tr></table></figure>
+<p>示例:使用 tr 命令从 os.txt 文件中获取输入，然后通过管道将输出发送给 sort 或 uniq 等命令</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; $ cat os.txt</span><br><span class="line">redhat</span><br><span class="line">suse</span><br><span class="line">centos</span><br><span class="line">ubuntu</span><br><span class="line">solaris</span><br><span class="line">hp-ux</span><br><span class="line">fedora</span><br><span class="line">centos</span><br><span class="line">redhat</span><br><span class="line">hp-ux</span><br><span class="line">-&gt; $ tr a-z A-Z &lt;os.txt | sort</span><br><span class="line">CENTOS</span><br><span class="line">CENTOS</span><br><span class="line">FEDORA</span><br><span class="line">HP-UX</span><br><span class="line">HP-UX</span><br><span class="line">REDHAT</span><br><span class="line">REDHAT</span><br><span class="line">SOLARIS</span><br><span class="line">SUSE</span><br><span class="line">UBUNTU</span><br><span class="line">-&gt; $ tr a-z A-Z &lt;os.txt | sort | uniq</span><br><span class="line">CENTOS</span><br><span class="line">FEDORA</span><br><span class="line">HP-UX</span><br><span class="line">REDHAT</span><br><span class="line">SOLARIS</span><br><span class="line">SUSE</span><br><span class="line">UBUNTU</span><br></pre></td></tr></table></figure>
+
+<h2 id="标准错误与标准输出"><a href="#标准错误与标准输出" class="headerlink" title="标准错误与标准输出"></a>标准错误与标准输出</h2><p>Linux 程序在执行任何形式的 I&#x2F;O 操作时，都是在读取或者写入一个文件描述符。一个文件描述符只是一个和打开的文件相关联的整数，它的背后可能是一个硬盘上的普通文件、FIFO、管道、终端、键盘、显示器，甚至是一个网络连接。</p>
+<p>stdin(0)、stdout(1)、stderr(2) 默认都是打开的，在重定向的过程中，0、1、2 这三个文件描述符可以直接使用。</p>
+<h3 id="标准错误重定向"><a href="#标准错误重定向" class="headerlink" title="标准错误重定向"></a>标准错误重定向</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; $ ls java  #先预览一下错误信息</span><br><span class="line">ls: 无法访问java: 没有那个文件或目录</span><br><span class="line">-&gt; $ ls java 2&gt;err.log  #重定向</span><br><span class="line">-&gt; $ cat err.log  #查看文件</span><br><span class="line">ls: 无法访问java: 没有那个文件或目录</span><br></pre></td></tr></table></figure>
+
+<h3 id="同时保存标准输出和标准输入"><a href="#同时保存标准输出和标准输入" class="headerlink" title="同时保存标准输出和标准输入"></a>同时保存标准输出和标准输入</h3><p>2&gt;&amp;1, 表示2的输出重定向等同于1</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls java &gt;out.log 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<h3 id="什么是-dev-null"><a href="#什么是-dev-null" class="headerlink" title="什么是&#x2F;dev&#x2F;null"></a>什么是&#x2F;dev&#x2F;null</h3><p>&#x2F;dev&#x2F;null表示空设备，在Unix和类Unix系统中使用。它被用作一个虚拟的黑洞，任何写入&#x2F;dev&#x2F;null的数据都会被丢弃，任何从&#x2F;dev&#x2F;null读取的操作都会立即返回一个空值。因此，&#x2F;dev&#x2F;null经常被用来丢弃不需要的输出或者作为一个空的输入源</p>
+<h1 id="变量作用域"><a href="#变量作用域" class="headerlink" title="变量作用域"></a>变量作用域</h1><p>Shell 变量的作用域可以分为三种：</p>
+<ul>
+<li>全局变量：当前 shell 进程中使用的变量，无前缀词修饰直接赋值的变量，如 FOO&#x3D;bar</li>
+<li>环境变量：可以在子shell中使用的变量，使用 export 导出，如 export FOO&#x3D;bar</li>
+<li>局部变量：使用 local 修饰，只能在函数内部使用。</li>
+</ul>
+<h2 id="全局变量"><a href="#全局变量" class="headerlink" title="全局变量"></a>全局变量</h2><p>例如</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% AGE=10</span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% <span class="built_in">echo</span> <span class="variable">$AGE</span></span></span><br><span class="line">10</span><br></pre></td></tr></table></figure>
+
+<p>此时AGE是全局变量，而且，在子shell中也无法获取它的数值</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; % zsh              #zsh可以切换到子shell</span><br><span class="line">-&gt; % echo $AGE        #此时为空值</span><br><span class="line"></span><br><span class="line">#执行脚本也无法读到变量</span><br><span class="line">-&gt; % cat test.sh</span><br><span class="line">#!/bin/bash</span><br><span class="line">echo $AGE</span><br><span class="line"></span><br><span class="line">-&gt; % ./test.sh</span><br><span class="line">   #无结果</span><br></pre></td></tr></table></figure>
+<p>我们看到，此时并没有获取到该变量的值。即，<strong>全局变量只能在当前 Shell 访问</strong></p>
+<h2 id="局部变量"><a href="#局部变量" class="headerlink" title="局部变量"></a>局部变量</h2><p>要想变量的作用域仅限于函数内部，那么可以在定义时加上 local 命令，此时该变量就成了局部变量</p>
+<p>新建一个脚本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">定义函数</span></span><br><span class="line">function func()&#123;</span><br><span class="line">	a=99</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">调用函数</span></span><br><span class="line">func</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">输出函数内部的变量</span></span><br><span class="line">echo $a</span><br></pre></td></tr></table></figure>
+<p>此时a输出为99。修改脚本,为变量a添加local修饰</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">定义函数</span></span><br><span class="line">function func()&#123;</span><br><span class="line">	local a=99</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">调用函数</span></span><br><span class="line">func</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">输出函数内部的变量</span></span><br><span class="line">echo $a</span><br></pre></td></tr></table></figure>
+<p>则此时a为空值</p>
+<h2 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h2><p>如果使用 export 命令将变量导出，那么它就在所有的子 Shell 中也有效了，这称为 “环境变量”</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% <span class="built_in">export</span> AGE=10</span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% <span class="built_in">cat</span> test.sh</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line">echo $AGE</span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% ./test.sh</span></span><br><span class="line">10</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% zsh</span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% <span class="built_in">echo</span> <span class="variable">$AGE</span></span></span><br><span class="line">10</span><br></pre></td></tr></table></figure>
+
+<h2 id="系统环境变量"><a href="#系统环境变量" class="headerlink" title="系统环境变量"></a>系统环境变量</h2><p>我们可以通过<code>env</code>命令和<code>set</code>命令查看一些当前shell中存在的变量</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">set 可以查看环境变量</span><br><span class="line">env 可以查看所有变量</span><br></pre></td></tr></table></figure>
+<p>这其中有一些比较特殊的变量</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">OSTYPE    <span class="comment">#操作系统类型 x86_64</span></span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">MACHTYPE  <span class="comment">#机器类型，识别系统的硬件类型。 如 darwin22.0</span></span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">PPID      <span class="comment">#一个进程的$PPID变量保存它的父进程的进程ID(pid)。</span></span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">UID       <span class="comment">#用户ID号，这是当前用户的用户标识号，它在/etc/passwd文件中记录。或者(id -u)</span></span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">HOME</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">USER</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">PWD</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">LANG      <span class="comment">#默认的主语系变量  查看所有支持的语言-&gt;locale -a</span></span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">SHELL     <span class="comment">#可以通过 cat /etc/shells  查看支持解释器</span></span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">PATH</span>      </span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">PS1      命令提示符设置。也就是[root@localhost ~ ]的设置。对于root用户是<span class="comment">#，对于普通用户是$</span></span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">? 上个命令的退出状态，或函数的返回值。</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash">$ 当前 Shell 进程 ID。对于 Shell 脚本，就是这些脚本所在的进程 ID。</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="shell"><a href="#shell" class="headerlink" title="shell"></a>shell</h1><p>shell 是指一个面向用户的命令接口，表现形式就是一个可以由用户录入的界面，这个界面也可以反馈运行信息</p>
+<h2 id="查看当前shell"><a href="#查看当前shell" class="headerlink" title="查看当前shell"></a>查看当前shell</h2><p>在linux机器上，默认都是使用bash。而在mac机器上，默认的是zsh。</p>
+<p>查看支持的shell</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">% <span class="built_in">cat</span> /etc/shells</span></span><br><span class="line">/bin/bash</span><br><span class="line">/bin/csh</span><br><span class="line">/bin/dash</span><br><span class="line">/bin/ksh</span><br><span class="line">/bin/sh</span><br><span class="line">/bin/tcsh</span><br><span class="line">/bin/zsh</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>查看默认的shell</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; % echo $SHELL</span><br><span class="line">/bin/zsh</span><br></pre></td></tr></table></figure>
+<h2 id="login-shell与非login-Shell"><a href="#login-shell与非login-Shell" class="headerlink" title="login shell与非login Shell"></a>login shell与非login Shell</h2><h3 id="login-shell"><a href="#login-shell" class="headerlink" title="login shell"></a>login shell</h3><p>包含两种情况：</p>
+<ol>
+<li>直接通过终端输入帐号密码登录,或者ssh连接</li>
+<li>使用 <code>su - username</code> 切换的用户</li>
+</ol>
+<p>登录式shell的配置文件以 <code>/etc/profile</code> 为入口，然后嵌套引入其他配置文件。<br><strong>常见的加载顺序</strong>通常为</p>
+<ol>
+<li>&#x2F;etc&#x2F;profile</li>
+<li>&#x2F;etc&#x2F;bash.bashrc</li>
+<li>~&#x2F;.bash_profile</li>
+<li>~&#x2F;.bashrc</li>
+</ol>
+<h4 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h4><p>在mac机器上准备两个文件，设置两个环境变量，然后远程ssh登陆</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">File1: .zprofile:</span><br><span class="line">export http_proxy=zprofile</span><br><span class="line">export AGE=20</span><br><span class="line"></span><br><span class="line">File2: .zshrc:</span><br><span class="line">export http_proxy=internet.com</span><br></pre></td></tr></table></figure>
+<p>执行:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; % echo $0</span><br><span class="line">-zsh    # 前面的 - 表示是login shell</span><br><span class="line">-&gt; % echo $AGE</span><br><span class="line">20</span><br><span class="line">-&gt; % echo $http_proxy</span><br><span class="line">http://internet.com</span><br></pre></td></tr></table></figure>
+<p>可以看到，.zshrc中的http_proxy变量值覆盖了.zprofile的变量http_proxy值。得出.zshrc比.zprofile后加载</p>
+<h3 id="非登陆式shell"><a href="#非登陆式shell" class="headerlink" title="非登陆式shell"></a>非登陆式shell</h3><p>包含这几种情况：</p>
+<ol>
+<li>su username</li>
+<li>图形界面下打开的终端</li>
+<li>执行脚本</li>
+<li>其他任何bash实例</li>
+</ol>
+<p>通常的加载顺序为:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">~/.bashrc -&gt; /etc/bashrc -&gt; /etc/profile.d/*.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="父shell与子shell"><a href="#父shell与子shell" class="headerlink" title="父shell与子shell"></a>父shell与子shell</h2><p>当在执行一个脚本时，父Shell会根据脚本程序的第一行 <code>#!</code> 之后指定的解释器开启一个 子Shell 环境，然后在子Shell中执行此脚本。<br>但是一旦，子Shell 中的脚本执行完毕，此子Shell随即结束，回到父Shell中，不会影响父Shell原本的环境。<br>也就是说export一个变量后，父shell是不会读取到该变量</p>
+<h3 id="如何判断父shell与子shell"><a href="#如何判断父shell与子shell" class="headerlink" title="如何判断父shell与子shell?"></a>如何判断父shell与子shell?</h3><p>通过进程ID，执行ps -f</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; % ps -f</span><br><span class="line">  UID   PID  PPID   C STIME   TTY           TIME CMD</span><br><span class="line">  501 14251 14250   0  3:25下午 ttys000    0:00.53 -zsh</span><br><span class="line">-&gt; % zsh                 # 可以通过这种方式开启一个子shell</span><br><span class="line">-&gt; % ps -f</span><br><span class="line">  UID   PID  PPID   C STIME   TTY           TIME CMD</span><br><span class="line">  501 14251 14250   0  3:25下午 ttys000    0:00.53 -zsh</span><br><span class="line">  501 14448 14251   0  3:32下午 ttys000    0:00.20 zsh</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; PS 命令:</span><br><span class="line">&gt; UID 程序被该UID所拥有</span><br><span class="line">&gt; PID 代表这个程序的ID</span><br><span class="line">&gt; PPID 代表其上级父程序的ID</span><br></pre></td></tr></table></figure>
+<p>由上可以看到子shell还是一个非login shell</p>
+]]></content>
+      <categories>
+        <category>shell</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>如何写一个shell脚本</title>
+    <url>/posts/5b59793/</url>
+    <content><![CDATA[<h1 id="shell脚本"><a href="#shell脚本" class="headerlink" title="shell脚本"></a>shell脚本</h1><p>用户事先编写一个 sh 脚本文件，内含 shell 脚本，而后使用 shell 程序执行该脚本，这种方式，我们习惯称为 shell 编程。</p>
+<p>shell 脚本中包含一些编程元素：</p>
+<ul>
+<li>if…else 选择结构，case…in 开关语句，for、while、until 循环；</li>
+<li>变量、数组、字符串、注释、加减乘除、逻辑运算等概念；</li>
+<li>函数，包括用户自定义的函数和内置函数</li>
+</ul>
+<span id="more"></span>
+<h1 id="脚本的参数"><a href="#脚本的参数" class="headerlink" title="脚本的参数"></a>脚本的参数</h1><p>运行脚本，可以添加参数。这些参数在脚本文件内部可以使用 <code>$n</code> 的形式来接收。例如，<code>$1</code> 表示第一个参数，<code>$2</code> 表示第二个参数</p>
+<table>
+<thead>
+<tr>
+<th align="left">变量</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">$0</td>
+<td align="left">脚本名</td>
+</tr>
+<tr>
+<td align="left">$n</td>
+<td align="left">位置参数</td>
+</tr>
+<tr>
+<td align="left">$#</td>
+<td align="left">传递给脚本的参数个数</td>
+</tr>
+<tr>
+<td align="left">$*</td>
+<td align="left">传递给脚本或函数的所有参数</td>
+</tr>
+<tr>
+<td align="left">$@</td>
+<td align="left">传递给脚本或函数的所有参数。当被双引号包含时，与上面稍有不同</td>
+</tr>
+</tbody></table>
+<h3 id="和-的差别"><a href="#和-的差别" class="headerlink" title="$*和$@的差别"></a>$*和$@的差别</h3><p>$*和 $@ 都表示传递给函数或脚本的所有参数。<br>但是当它们被双引号” “包含时，就会有区别了：</p>
+<ul>
+<li>“$*”会将所有的参数从整体上看做一份数据，而不是把每个参数都看做一份数据。</li>
+<li>“$@”仍然将每个参数都看作一份数据，彼此之间是独立的。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">echo &quot;print each param from \&quot;\$*\&quot;&quot;</span><br><span class="line">for var in &quot;$*&quot;</span><br><span class="line">do</span><br><span class="line">    echo &quot;$var&quot;</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">echo &quot;print each param from \&quot;\$@\&quot;&quot;</span><br><span class="line">for var in &quot;$@&quot;</span><br><span class="line">do</span><br><span class="line">    echo &quot;$var&quot;</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">$ ./test.sh a b c d</span><br><span class="line">print each param from &quot;$*&quot;</span><br><span class="line">a b c d</span><br><span class="line">print each param from &quot;$@&quot;</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br><span class="line">d</span><br></pre></td></tr></table></figure>
+<p>对于$*，只循环了 1 次，因为它只有 1 份数据；<br>对于$@，循环了 5 次，因为它有 5 份数据</p>
+<h3 id="参数检查"><a href="#参数检查" class="headerlink" title="参数检查"></a>参数检查</h3><p>我们可以检查对参数个数进行检查，如果脚本的参数个数不达标则报错退出</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if [ $# -ne 2 ];then</span><br><span class="line">   echo &quot;error:****&quot;</span><br><span class="line">   exit -1</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+<p>也可以用可选参数方式对部分变量赋值</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">TAG=default-tag</span><br><span class="line">BRANCH=default-branch</span><br><span class="line">REPO=default-repo</span><br><span class="line"></span><br><span class="line">while [ &quot;$1&quot; != &quot;&quot; ]; do</span><br><span class="line">  case $1 in</span><br><span class="line">    -r)</span><br><span class="line">      shift</span><br><span class="line">      REPO=$1</span><br><span class="line">      ;;</span><br><span class="line">    -b)</span><br><span class="line">      shift</span><br><span class="line">      BRANCH=$1</span><br><span class="line">      ;;</span><br><span class="line">    -t)</span><br><span class="line">      shift</span><br><span class="line">      TAG=$1</span><br><span class="line">      ;;</span><br><span class="line">    *)</span><br><span class="line">      echo &gt;&amp;2 &quot;Usage2: $0 -r [value] -b [value] -t [value]&quot;</span><br><span class="line">      exit 1</span><br><span class="line">      ;;</span><br><span class="line">  esac</span><br><span class="line">  shift</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">echo $TAG</span><br><span class="line">echo $BRANCH</span><br><span class="line">echo $REPO</span><br></pre></td></tr></table></figure>
+<p>此处，<code>shift</code>命令用于向左移动脚本的参数位置。每次调用<code>shift</code>命令，脚本的参数位置都会向左移动一个位置，原来的 <code>$2</code> 变成<code>$1</code>，<code>$3</code>变成<code>$2</code>，依此类推。这在处理脚本的命令行参数时特别有用</p>
+<h1 id="设置shell特性"><a href="#设置shell特性" class="headerlink" title="设置shell特性"></a>设置shell特性</h1><p>用set命令设置shell的特性</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">set -e</span><br><span class="line">set -u</span><br><span class="line">set -x</span><br></pre></td></tr></table></figure>
+<h3 id="e-表示shell脚本有错误立刻退出"><a href="#e-表示shell脚本有错误立刻退出" class="headerlink" title="-e 表示shell脚本有错误立刻退出"></a>-e 表示shell脚本有错误立刻退出</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">set -e</span><br><span class="line">cd aaa</span><br><span class="line">ls</span><br><span class="line">echo &quot;end&quot;</span><br></pre></td></tr></table></figure>
+<p>此处没有aaa目录，shell脚本会终止在第三行</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">/test.sh: line 3: cd: aaa: No such file or directory</span><br></pre></td></tr></table></figure>
+
+<h3 id="u-表示shell会将unset的，或者为空的变量视为错误并退出"><a href="#u-表示shell会将unset的，或者为空的变量视为错误并退出" class="headerlink" title="-u 表示shell会将unset的，或者为空的变量视为错误并退出"></a>-u 表示shell会将unset的，或者为空的变量视为错误并退出</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line">set -u</span><br><span class="line">echo $PATH</span><br><span class="line">echo $TOKEN     # ./test.sh: line 4: TOKEN: unbound variable</span><br><span class="line">ls</span><br><span class="line">echo &quot;end&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="x-表示调试模式，执行的每一命令都打印上"><a href="#x-表示调试模式，执行的每一命令都打印上" class="headerlink" title="-x 表示调试模式，执行的每一命令都打印上"></a>-x 表示调试模式，执行的每一命令都打印上</h3><h1 id="脚本函数"><a href="#脚本函数" class="headerlink" title="脚本函数"></a>脚本函数</h1><p>在Shell脚本中，可以使用function关键字来定义函数。以下是一个简单的示例</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">function say_hello() &#123;</span><br><span class="line">    echo &quot;Hello, world!&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 调用函数</span><br><span class="line">say_hello</span><br></pre></td></tr></table></figure>
+<p>在上面的示例中，定义了一个名为say_hello的函数，函数体中使用echo语句输出字符串Hello, world!。在函数定义后，使用函数名来调用函数，例如say_hello。</p>
+<p>如果函数需要传递参数，则可以在函数名后面添加参数列表。以下是一个带参数的函数示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">function say_hello_to() &#123;</span><br><span class="line">    echo &quot;Hello, $1!&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 调用函数</span><br><span class="line">say_hello_to &quot;John&quot;</span><br></pre></td></tr></table></figure>
+<p>在上面的示例中，定义了一个名为say_hello_to的函数，并在函数名后面添加了参数列表。函数体中使用echo语句输出字符串Hello, <code>$1</code>!，其中$1表示第一个参数的值。在函数调用时，将要传递的参数作为参数列表的值传递给函数，例如say_hello_to “John”。</p>
+<p>除了使用function关键字来定义函数之外，还可以使用函数简写语法来定义函数。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">say_hello() &#123;</span><br><span class="line">    echo &quot;Hello, world!&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 调用函数</span><br><span class="line">say_hello</span><br></pre></td></tr></table></figure>
+
+<h2 id="函数返回值"><a href="#函数返回值" class="headerlink" title="函数返回值"></a>函数返回值</h2><p>在Shell脚本中，可以使用return语句来返回函数的值。以下是一个简单的示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">function add() &#123;</span><br><span class="line">    local sum=$(($1 + $2))</span><br><span class="line">    return $sum</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 调用函数并获取返回值</span><br><span class="line">add 10 20</span><br><span class="line">result=$?</span><br><span class="line"></span><br><span class="line">echo &quot;The sum is: $result&quot;</span><br></pre></td></tr></table></figure>
+<p>在上面的示例中，定义了一个名为add的函数，函数体中计算两个参数的和并将结果保存在变量sum中。使用return语句将变量sum的值作为函数返回值。在函数调用时，将要传递的参数作为参数列表的值传递给函数，例如add 10 20。使用$?来获取函数的返回值，将其保存在变量result中，并使用echo语句输出返回值。</p>
+<p>注意，在Shell脚本中，函数的返回值只能是一个整数值。如果需要返回其他类型的值（如字符串），可以将其保存在一个变量中，并在函数结束时输出该变量的值。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">function get_greeting() &#123;</span><br><span class="line">    local name=$1</span><br><span class="line">    local greeting=&quot;Hello, $name!&quot;</span><br><span class="line">    echo $greeting</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 调用函数并获取返回值</span><br><span class="line">result=$(get_greeting &quot;John&quot;)</span><br><span class="line">echo $result</span><br></pre></td></tr></table></figure>
+<p>在上面的示例中，定义了一个名为get_greeting的函数，函数体中使用参数name构建问候语，并将其保存在变量greeting中。在函数结束时，使用echo语句输出变量greeting的值。在函数调用时，将要传递的参数作为参数列表的值传递给函数，例如get_greeting “John”。将函数的输出保存在变量result中，并使用echo语句输出返回值。</p>
+<h1 id="数字运算"><a href="#数字运算" class="headerlink" title="数字运算"></a>数字运算</h1><table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>+</code></td>
+<td>加</td>
+</tr>
+<tr>
+<td><code>-</code></td>
+<td>减</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>乘</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>除</td>
+</tr>
+<tr>
+<td><code>**</code></td>
+<td>求幂</td>
+</tr>
+<tr>
+<td><code>%</code></td>
+<td>求模</td>
+</tr>
+<tr>
+<td><code>+=</code></td>
+<td>加等(plus-equal) 把原变量值增加一个常量并重新赋值给变量</td>
+</tr>
+<tr>
+<td><code>-=</code></td>
+<td>减等(minus-equal) 把原变量值减少一个常量并重新赋值给变量</td>
+</tr>
+<tr>
+<td><code>*=</code></td>
+<td>乘等(times-equal) 把原变量值乘上一个常量并重新赋值给变量</td>
+</tr>
+<tr>
+<td><code>/=</code></td>
+<td>除等(slash-equal) 把原变量值除以一个常量并重新赋值给变量</td>
+</tr>
+<tr>
+<td><code>%=</code></td>
+<td>模等(mod-equal) 把原变量值除以一个常量整除（即取模）并重新赋余数的值给变量</td>
+</tr>
+</tbody></table>
+<p>示例:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Bash在版本2.02引入了<span class="string">&quot;**&quot;</span>求幂操作符.</span></span><br><span class="line">let &quot;z=5**3&quot;</span><br><span class="line">echo &quot;z = $z&quot;   # z = 125</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">求模（它返回整数整除一个数后的余数）</span></span><br><span class="line">let &quot;y=5 % 3&quot;</span><br><span class="line">echo &quot;y = $y&quot;   # y = 2</span><br><span class="line"></span><br><span class="line">let &quot;var += 5&quot; # 会使变量var值加了5并把值赋给var.</span><br><span class="line">let &quot;var *= 4&quot; # 使变量var的值乘上4并把值赋给var.</span><br></pre></td></tr></table></figure>
+
+<h2 id="双括号结构"><a href="#双括号结构" class="headerlink" title="双括号结构"></a>双括号结构</h2><p>用<code>((...))</code>结构来处理变量。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">(( a = 23 ))  # 以C风格来设置一个值，在&quot;=&quot;两边可以有空格.</span><br><span class="line">echo &quot;a (initial value) = $a&quot;</span><br><span class="line"></span><br><span class="line">(( a++ ))     # C风格的计算后自增.</span><br><span class="line">echo &quot;a (after a++) = $a&quot;</span><br><span class="line"></span><br><span class="line">(( a-- ))     # C风格的计算后自减.</span><br><span class="line">echo &quot;a (after a--) = $a&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(( ++a ))     # C风格的计算前自增.</span><br><span class="line">echo &quot;a (after ++a) = $a&quot;</span><br><span class="line"></span><br><span class="line">(( --a ))     # C风格的计算前自减.</span><br><span class="line">echo &quot;a (after --a) = $a&quot;</span><br></pre></td></tr></table></figure>
+<p>算术运算符必须用双括号(( ))括起来，以便Shell可以正确地解析表达式</p>
+<h1 id="判断语句"><a href="#判断语句" class="headerlink" title="判断语句"></a>判断语句</h1><h2 id="if语句"><a href="#if语句" class="headerlink" title="if语句"></a>if语句</h2><p>在 sh&#x2F;bash 里，<strong>如果 else 分支没有语句执行，就不要写这个 else</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">==========if============</span><br><span class="line">if condition;then</span><br><span class="line">  command</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">========if-else=========</span><br><span class="line">if condition;then</span><br><span class="line">  command</span><br><span class="line">else</span><br><span class="line">  command</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">=====if-elif-else=======</span><br><span class="line">if condition;then</span><br><span class="line">  command</span><br><span class="line">elif condition;then</span><br><span class="line">  command</span><br><span class="line">else</span><br><span class="line">  command</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<h2 id="文件判断"><a href="#文件判断" class="headerlink" title="文件判断"></a>文件判断</h2><p>如果下面的条件成立返回真</p>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-e</td>
+<td>文件存在</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>文件是一个普通文件(不是一个目录或是一个设备文件)</td>
+</tr>
+<tr>
+<td>-d</td>
+<td>文件是一个目录</td>
+</tr>
+<tr>
+<td>-b</td>
+<td>文件是一个块设备(软盘，光驱，等等。)</td>
+</tr>
+<tr>
+<td>-c</td>
+<td>文件是一个字符设备(键盘，调制解调器，声卡，等等。)</td>
+</tr>
+<tr>
+<td>-p</td>
+<td>文件是一个管道</td>
+</tr>
+<tr>
+<td>-h</td>
+<td>文件是一个符号链接</td>
+</tr>
+<tr>
+<td>-L</td>
+<td>文件是一个符号链接</td>
+</tr>
+</tbody></table>
+<p>示例:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if [ ! -f &quot;/data/filename&quot; ];then</span><br><span class="line">   echo &quot;文件不存在&quot;</span><br><span class="line">else</span><br><span class="line">   echo &quot;文件存在&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">或者:</span><br><span class="line">FILE=/etc/resolv.conf</span><br><span class="line">if test -f &quot;$FILE&quot;; then</span><br><span class="line">    echo &quot;$FILE exist&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">-f FILE - 判断文件是否存在</span><br><span class="line">-b FILE - 如果文件存在并且是块特殊文件，则为True。</span><br><span class="line">-c FILE - 如果文件存在并且是特殊字符文件，则为True。</span><br><span class="line">-d FILE - 如果文件存在并且是目录，则为True。</span><br></pre></td></tr></table></figure>
+
+<h2 id="比较"><a href="#比较" class="headerlink" title="比较"></a>比较</h2><p>二元比较操作符比较两个变量或是数值。注意整数和字符串比较的分别。</p>
+<h3 id="整数比较"><a href="#整数比较" class="headerlink" title="整数比较"></a>整数比较</h3><table>
+<thead>
+<tr>
+<th>比较操作符</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>-eq</code></td>
+<td>等于</td>
+<td><code>if [ &quot;$a&quot; -eq &quot;$b&quot; ]</code></td>
+</tr>
+<tr>
+<td><code>-ne</code></td>
+<td>不等于</td>
+<td><code>if [ &quot;$a&quot; -ne &quot;$b&quot; ]</code></td>
+</tr>
+<tr>
+<td><code>-gt</code></td>
+<td>大于</td>
+<td><code>if [ &quot;$a&quot; -gt &quot;$b&quot; ]</code></td>
+</tr>
+<tr>
+<td><code>-ge</code></td>
+<td>大于等于</td>
+<td><code>if [ &quot;$a&quot; -ge &quot;$b&quot; ]</code></td>
+</tr>
+<tr>
+<td><code>-lt</code></td>
+<td>小于</td>
+<td><code>if [ &quot;$a&quot; -lt &quot;$b&quot; ]</code></td>
+</tr>
+<tr>
+<td><code>-le</code></td>
+<td>小于等于</td>
+<td><code>if [ &quot;$a&quot; -le &quot;$b&quot; ]</code></td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>小于(在双括号里使用)</td>
+<td><code>((&quot;$a&quot; &lt; &quot;$b&quot;))</code></td>
+</tr>
+<tr>
+<td><code>&lt;=</code></td>
+<td>小于等于 (在双括号里使用)</td>
+<td><code>((&quot;$a&quot; &lt;= &quot;$b&quot;))</code></td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>大于 (在双括号里使用)</td>
+<td><code>((&quot;$a&quot; &gt; &quot;$b&quot;))</code></td>
+</tr>
+<tr>
+<td><code>&gt;=</code></td>
+<td>大于等于(在双括号里使用)</td>
+<td><code>((&quot;$a&quot; &gt;= &quot;$b&quot;))</code></td>
+</tr>
+</tbody></table>
+<p>示例:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">a=10</span><br><span class="line">b=20</span><br><span class="line"></span><br><span class="line">if [ $a -eq $b ]</span><br><span class="line">then</span><br><span class="line">   echo &quot;$a -eq $b : a 等于 b&quot;</span><br><span class="line">else</span><br><span class="line">   echo &quot;$a -eq $b: a 不等于 b&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">-eq:等于</span><br><span class="line">-ne:不等于</span><br><span class="line">-gt:大于</span><br><span class="line">-lt:小于</span><br><span class="line">-ge:大于等于</span><br><span class="line">-le:小于等于</span><br></pre></td></tr></table></figure>
+
+<h3 id="字符串比较"><a href="#字符串比较" class="headerlink" title="字符串比较"></a>字符串比较</h3><table>
+<thead>
+<tr>
+<th>比较操作符</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&#x3D;</td>
+<td>等于</td>
+<td><code>if [ &quot;$a&quot; = &quot;$b&quot; ]</code></td>
+</tr>
+<tr>
+<td>&#x3D;&#x3D;</td>
+<td>等于，它和&#x3D;是同义词。</td>
+<td><code>if [ &quot;$a&quot; == &quot;$b&quot; ]</code></td>
+</tr>
+<tr>
+<td>!&#x3D;</td>
+<td>不相等，操作符在[[ … ]]结构里使用模式匹配.</td>
+<td><code>if [ &quot;$a&quot; != &quot;$b&quot; ]</code></td>
+</tr>
+<tr>
+<td>-z</td>
+<td>字符串为”null”，即是指字符串长度为零。</td>
+<td>-</td>
+</tr>
+<tr>
+<td>-n</td>
+<td>字符串不为”null”，即长度不为零。</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<p>比如，判断变量是否存在</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">通过-n判断</span><br><span class="line">if [ -n &quot;$var&quot; ];then</span><br><span class="line">   echo &quot;var exist&quot;</span><br><span class="line">else</span><br><span class="line">   echo &quot;var not exist&quot;</span><br><span class="line">fi</span><br><span class="line">其中 &quot;&quot; 必不可缺少</span><br></pre></td></tr></table></figure>
+<p>此外，在 Shell 中，[[ ]] 是 Shell 的内置命令，用于检测某个条件是否成立。同时，它支持正则表达式，可以使用&#x3D;~来检测字符串是否符合某个正则表达式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if [[ $APK == *release*.apk ]]; then</span><br><span class="line">    # 测试apk是否满足这样的格式</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<h3 id="逻辑比较"><a href="#逻辑比较" class="headerlink" title="逻辑比较"></a>逻辑比较</h3><table>
+<thead>
+<tr>
+<th>比较操作符</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-a</td>
+<td>逻辑与，如果exp1和exp2都为真，则exp1 -a exp2返回真。</td>
+<td><code>if [ &quot;$exp1&quot; -a &quot;$exp2&quot; ]</code></td>
+</tr>
+<tr>
+<td>-o</td>
+<td>逻辑或，只要exp1和exp2任何一个为真，则exp1 -o exp2 返回真。</td>
+<td><code>if [ &quot;$exp1&quot; -o &quot;$exp2&quot; ]</code></td>
+</tr>
+</tbody></table>
+<p>也可以用这种方式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">command1||command2</span><br><span class="line">只有当command1不正确执行才执行command2</span><br><span class="line">if [[ $suffix == *.apk ]] || [[ $suffix == *.zip ]]; then</span><br><span class="line">    # 后缀是apk或者zip</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if [[ &quot;$local_branch&quot; = &quot;origin/release&quot;* ]] || [[ &quot;$local_branch&quot; = &quot;origin/internal&quot;* ]];then</span><br><span class="line">      </span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<h3 id="命令的静默输出"><a href="#命令的静默输出" class="headerlink" title="命令的静默输出"></a>命令的静默输出</h3><p>有些命令可以用来判断</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 查找某个分支是否存在，如果存在就删除</span><br><span class="line">if git show-ref --verify --quiet refs/heads/$2; then</span><br><span class="line">   git branch -D $2;</span><br><span class="line">fi</span><br><span class="line">  </span><br><span class="line">grep -q &quot;test&quot; filename</span><br><span class="line"># 不会输出任何信息，如果命令运行成功返回0，失败则返回非0值。一般用于条件测试。</span><br><span class="line"></span><br><span class="line">if grep -q &#x27;test&#x27; filename;then</span><br><span class="line">  echo &quot;find test&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+<p>判断上一条命令是否成功</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">diff a.txt b.txt   #diff文件有差别时，命令的返回结果不为0</span><br><span class="line">if [ $? -ne 0 ]; then</span><br><span class="line">   echo &quot;文件比较有差别&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<h1 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h1><h2 id="for循环"><a href="#for循环" class="headerlink" title="for循环"></a>for循环</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">for var in item1 item2 ... itemN</span><br><span class="line">do</span><br><span class="line">    command1</span><br><span class="line">    command2</span><br><span class="line">    ...</span><br><span class="line">    commandN</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">for planet in Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune Pluto</span><br><span class="line">do</span><br><span class="line">  echo $planet  # 每个行星被单独打印在一行上.</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<p>以命令的返回结果作为list来进行循环</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">DIRS=$(ls -l|sed &#x27;1d&#x27;|awk &#x27;&#123;print $9&#125;&#x27;)</span><br><span class="line"># 此处要删除第一行，因为第一行是total </span><br><span class="line">for dir in $&#123;DIRS[*]&#125;</span><br><span class="line">do</span><br><span class="line">   echo $dir</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<p>数字循环</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">for i in &#123;1..5&#125;</span><br><span class="line">do</span><br><span class="line">  echo $i</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">#有一组urls,按照;分割后</span><br><span class="line">for url in $(echo &quot;$urls&quot; | awk -F&#x27;;&#x27; &#x27;&#123;for(i=1;i&lt;=NF;i++) print $i&#125;&#x27;); do</span><br><span class="line">  curl &quot;$url&quot;</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">#使用seq命令生成数字序列</span><br><span class="line">for i in $(seq 1 5)</span><br><span class="line">do</span><br><span class="line">  echo $i</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<h2 id="while循环"><a href="#while循环" class="headerlink" title="while循环"></a>while循环</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">while condition</span><br><span class="line">do</span><br><span class="line">   statements</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<p>示例</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">num=0</span><br><span class="line">while ((num &lt; 3))</span><br><span class="line">do</span><br><span class="line">	echo $num</span><br><span class="line">	((num++))</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">var0=0</span><br><span class="line">LIMIT=10</span><br><span class="line"></span><br><span class="line">while [ &quot;$var0&quot; -lt &quot;$LIMIT&quot; ]</span><br><span class="line">do</span><br><span class="line">  echo -n &quot;$var0 &quot;        # -n 将会阻止产生新行。</span><br><span class="line">  #             ^           空格,数字之间的分隔。</span><br><span class="line">  var0=`expr $var0 + 1`   # var0=$(($var0+1))  也可以。</span><br><span class="line">                          # var0=$((var0 + 1)) 也可以。</span><br><span class="line">                          # let &quot;var0 += 1&quot;    也可以。</span><br><span class="line">done                      # 使用其他的方法也行。</span><br></pre></td></tr></table></figure>
+<p>读文件的每一行直到末尾</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">while read line</span><br><span class="line">do</span><br><span class="line">    # do something to each line</span><br><span class="line">done &lt; file</span><br></pre></td></tr></table></figure>
+
+<h2 id="case-…-esac"><a href="#case-…-esac" class="headerlink" title="case … esac"></a>case … esac</h2><p>类似switch case</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">case 变量 in</span><br><span class="line">模式1)</span><br><span class="line">    command1</span><br><span class="line">    command2</span><br><span class="line">    ...</span><br><span class="line">    commandN</span><br><span class="line">    ;;</span><br><span class="line">模式2)</span><br><span class="line">    command1</span><br><span class="line">    command2</span><br><span class="line">    ...</span><br><span class="line">    commandN</span><br><span class="line">    ;;</span><br><span class="line">esac</span><br></pre></td></tr></table></figure>
+
+<p>示例:  输入 1 到 4 之间的数字</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">echo &#x27;输入 1 到 4 之间的数字:&#x27;</span><br><span class="line">echo &#x27;你输入的数字为:&#x27;</span><br><span class="line">read Num</span><br><span class="line">case $Num in</span><br><span class="line">    1)  echo &#x27;你选择了 1&#x27;</span><br><span class="line">    ;;</span><br><span class="line">    2)  echo &#x27;你选择了 2&#x27;</span><br><span class="line">    ;;</span><br><span class="line">    3)  echo &#x27;你选择了 3&#x27;</span><br><span class="line">    ;;</span><br><span class="line">    4)  echo &#x27;你选择了 4&#x27;</span><br><span class="line">    ;;</span><br><span class="line">    *)  echo &#x27;你没有输入 1 到 4 之间的数字&#x27;</span><br><span class="line">    ;;</span><br><span class="line">esac</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>shell</category>
+      </categories>
+  </entry>
 </search>
