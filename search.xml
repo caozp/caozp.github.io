@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>My New Post</title>
+    <title>Hexo使用以及next主题配置</title>
     <url>/posts/177574ba/</url>
-    <content><![CDATA[<p>这个是一个测试</p>
+    <content><![CDATA[<p>参考[<a href="https://blog.csdn.net/as480133937/article/details/100138838]">https://blog.csdn.net/as480133937/article/details/100138838]</a></p>
+<p>添加了本地搜索<br>修改文章链接<br>添加live2d</p>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p>hexo new “name”       # 新建文章<br>hexo new page “name”  # 新建页面<br>hexo g                # 生成页面<br>hexo d                # 部署<br>hexo g -d             # 生成页面并部署<br>hexo s                # 本地预览<br>hexo clean            # 清除缓存和已生成的静态文件<br>hexo help             # 帮助</p>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>Hexo</category>
       </categories>
   </entry>
 </search>
