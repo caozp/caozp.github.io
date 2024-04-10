@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hexo使用以及next主题配置</title>
-    <url>/posts/177574ba/</url>
-    <content><![CDATA[<p>参考<a href="https://blog.csdn.net/as480133937/article/details/100138838">文章</a></p>
-<span id="more"></span>
-<p>添加了本地搜索<br>修改文章链接<br>添加live2d</p>
-<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p>hexo new “name”       # 新建文章<br>hexo new page “name”  # 新建页面<br>hexo g                # 生成页面<br>hexo d                # 部署<br>hexo g -d             # 生成页面并部署<br>hexo s                # 本地预览<br>hexo clean            # 清除缓存和已生成的静态文件<br>hexo help             # 帮助</p>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Jenkins 声明式pipeline语法整理</title>
     <url>/posts/b9d9f13/</url>
     <content><![CDATA[<h1 id="pipeline"><a href="#pipeline" class="headerlink" title="pipeline"></a>pipeline</h1><p>顶层必须是pipeline,然后pipeline下面包含的是section。常见的section如下</p>
@@ -121,6 +109,18 @@
 ]]></content>
       <categories>
         <category>Jenkins</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Hexo使用以及next主题配置</title>
+    <url>/posts/177574ba/</url>
+    <content><![CDATA[<p>参考<a href="https://blog.csdn.net/as480133937/article/details/100138838">文章</a></p>
+<span id="more"></span>
+<p>添加了本地搜索<br>修改文章链接<br>添加live2d</p>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p>hexo new “name”       # 新建文章<br>hexo new page “name”  # 新建页面<br>hexo g                # 生成页面<br>hexo d                # 部署<br>hexo g -d             # 生成页面并部署<br>hexo s                # 本地预览<br>hexo clean            # 清除缓存和已生成的静态文件<br>hexo help             # 帮助</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
       </categories>
   </entry>
 </search>
