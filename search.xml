@@ -4,11 +4,123 @@
     <title>Hexo使用以及next主题配置</title>
     <url>/posts/177574ba/</url>
     <content><![CDATA[<p>参考<a href="https://blog.csdn.net/as480133937/article/details/100138838">文章</a></p>
+<span id="more"></span>
 <p>添加了本地搜索<br>修改文章链接<br>添加live2d</p>
 <h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p>hexo new “name”       # 新建文章<br>hexo new page “name”  # 新建页面<br>hexo g                # 生成页面<br>hexo d                # 部署<br>hexo g -d             # 生成页面并部署<br>hexo s                # 本地预览<br>hexo clean            # 清除缓存和已生成的静态文件<br>hexo help             # 帮助</p>
 ]]></content>
       <categories>
         <category>Hexo</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Jenkins 声明式pipeline语法整理</title>
+    <url>/posts/b9d9f13/</url>
+    <content><![CDATA[<h1 id="pipeline"><a href="#pipeline" class="headerlink" title="pipeline"></a>pipeline</h1><p>顶层必须是pipeline,然后pipeline下面包含的是section。常见的section如下</p>
+<span id="more"></span>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pipeline&#123;</span><br><span class="line">    agent&#123;&#125;</span><br><span class="line">    environment&#123;&#125;</span><br><span class="line">    triggers&#123;&#125;</span><br><span class="line">    options&#123;&#125;</span><br><span class="line">    parameters&#123;&#125;</span><br><span class="line">    tools&#123;&#125;</span><br><span class="line">    stages&#123;&#125;</span><br><span class="line">    post&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="section"><a href="#section" class="headerlink" title="section"></a>section</h1><h2 id="agent"><a href="#agent" class="headerlink" title="agent"></a>agent</h2><p>指定整个流水线或特定阶段将在jenkins环境中执行的位置。</p>
+<p>可选值:</p>
+<ul>
+<li>any 在任何可用的节点上执行。</li>
+<li>none 没有指定agent的时候默认。</li>
+<li>docker 镜像</li>
+<li>label 特定的label名</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pipeline&#123;</span><br><span class="line">    //agent any</span><br><span class="line">    //agent &#123; label &#x27;LABEL&#x27;&#125;</span><br><span class="line">    agent &#123;</span><br><span class="line">        docker &#123;</span><br><span class="line">            label &#x27;docker&#x27;</span><br><span class="line">            image &#x27;ubuntu:20.04&#x27;</span><br><span class="line">            args &#x27;-u root&#x27;</span><br><span class="line">            alwaysPull false</span><br><span class="line">            registryUrl &#x27;registry.com&#x27;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    stages&#123;</span><br><span class="line">        stage(&#x27;build&#x27;) &#123;</span><br><span class="line">            agent &#123; label &#x27;LABEL&#x27; &#125;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &#x27;echo &quot;abc&quot;&#x27;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        stage(&#x27;deploy&#x27;)&#123;</span><br><span class="line">            agent &#123;</span><br><span class="line">                docker &#123;</span><br><span class="line">                    image &#x27;registry.cn-hangzhou.aliyuncs.com/mckj/ansible&#x27;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &#x27;echo &quot;通过ansbile进行部署&quot;&#x27;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="post"><a href="#post" class="headerlink" title="post"></a>post</h2><p>这些阶段根据流水线或阶段的完成情况而 运行(取决于流水线中post部分的位置)</p>
+<ul>
+<li>success 成功状态会执行</li>
+<li>failure 失败状态会执行</li>
+<li>always 总是会执行</li>
+<li>aborted 中断状态会执行</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">post &#123;</span><br><span class="line">    success &#123;</span><br><span class="line">        sh &quot;echo 成功了&quot;</span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    always &#123;</span><br><span class="line">        sh &quot;echo always&quot;</span><br><span class="line">        cleanWs()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="environment"><a href="#environment" class="headerlink" title="environment"></a>environment</h2><p>为所有步骤设置环境变量，或者是特定阶段的步骤。这取决于 environment 指令在流水线内的位置</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pipeline&#123;</span><br><span class="line">    agent any</span><br><span class="line">    environment &#123; </span><br><span class="line">        CC = &#x27;clang&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(&#x27;Example&#x27;) &#123;</span><br><span class="line">            environment &#123; </span><br><span class="line">                ACCESS_KEY = credentials(&#x27;my-secret-text&#x27;) </span><br><span class="line">            &#125;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &#x27;printenv&#x27;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该指令还支持一种特殊的辅助方法credentials()。</p>
+<p>该方法可用于在Jenkins环境中通过标识符访问预定义的凭证。</p>
+<p>支持<strong>Secret Text，Secret Field，Username and password，SSH with Private Key</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line">    environment &#123; </span><br><span class="line">        CC = &#x27;clang&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(&#x27;Example&#x27;) &#123;</span><br><span class="line">            environment &#123; </span><br><span class="line">                AN_ACCESS_KEY = credentials(&#x27;my-predefined-secret-text&#x27;) </span><br><span class="line">            &#125;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &#x27;printenv&#x27;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        stage(&#x27;Example Username/Password&#x27;) &#123;</span><br><span class="line">            environment &#123;</span><br><span class="line">                SERVICE_CREDS = credentials(&#x27;my-predefined-username-password&#x27;)</span><br><span class="line">            &#125;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &#x27;echo &quot;Service user is $SERVICE_CREDS_USR&quot;&#x27;</span><br><span class="line">                sh &#x27;echo &quot;Service password is $SERVICE_CREDS_PSW&quot;&#x27;</span><br><span class="line">                sh &#x27;curl -u $SERVICE_CREDS https://myservice.example.com&#x27;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        stage(&#x27;Example SSH Username with private key&#x27;) &#123;</span><br><span class="line">            environment &#123;</span><br><span class="line">                SSH_CREDS = credentials(&#x27;my-predefined-ssh-creds&#x27;)</span><br><span class="line">            &#125;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &#x27;echo &quot;SSH private key is located at $SSH_CREDS&quot;&#x27;</span><br><span class="line">                sh &#x27;echo &quot;SSH user is $SSH_CREDS_USR&quot;&#x27;</span><br><span class="line">                sh &#x27;echo &quot;SSH passphrase is $SSH_CREDS_PSW&quot;&#x27;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="options"><a href="#options" class="headerlink" title="options"></a>options</h2><p>用来配置Jenkins应用自身的一些配置项，常用的参数有如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">options &#123;</span><br><span class="line"></span><br><span class="line">    //表示保留10次构建历史</span><br><span class="line">    buildDiscarder(logRotator(numToKeepStr: &#x27;10&#x27;))</span><br><span class="line">    </span><br><span class="line">    //不允许同时执行流水线，被用来防止同时访问共享资源等</span><br><span class="line">    disableConcurrentBuilds()</span><br><span class="line">    </span><br><span class="line">    //项目构建超时时间</span><br><span class="line">    timeout(time: 10, unit: &#x27;MINUTES&#x27;)</span><br><span class="line">    </span><br><span class="line">    //输出构建的时间信息</span><br><span class="line">    timestamps()</span><br><span class="line">    </span><br><span class="line">    //跳过默认的代码检出</span><br><span class="line">    skipDefaultCheckout()</span><br><span class="line">    </span><br><span class="line">    //指定代码检出到$WORKSPACE的子目录</span><br><span class="line">    checkoutToSubdirectory(&#x27;testdir&#x27;)</span><br><span class="line">    </span><br><span class="line">    //重试</span><br><span class="line">    retry(3)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以用于配置stage的指令有retry, timeout, or timestamps</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stage(&#x27;Example&#x27;) &#123;</span><br><span class="line">    options &#123;</span><br><span class="line">        timeout(time: 1, unit: &#x27;HOURS&#x27;)</span><br><span class="line">        retry(3)</span><br><span class="line">        timestamps()</span><br><span class="line">    &#125;</span><br><span class="line">    steps &#123;</span><br><span class="line">        echo &#x27;Hello World&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Parameters构建变量"><a href="#Parameters构建变量" class="headerlink" title="Parameters构建变量"></a>Parameters构建变量</h2><p>支持的参数</p>
+<ul>
+<li>text</li>
+<li>string</li>
+<li>booleanParam</li>
+<li>choice</li>
+<li>password</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line">    parameters &#123;</span><br><span class="line">        string(name: &#x27;PERSON&#x27;, defaultValue: &#x27;Mr Jenkins&#x27;, description: &#x27;Who should I say hello to?&#x27;)</span><br><span class="line"></span><br><span class="line">        text(name: &#x27;BIOGRAPHY&#x27;, defaultValue: &#x27;&#x27;, description: &#x27;Enter some information about the person&#x27;)</span><br><span class="line"></span><br><span class="line">        booleanParam(name: &#x27;TOGGLE&#x27;, defaultValue: true, description: &#x27;Toggle this value&#x27;)</span><br><span class="line"></span><br><span class="line">        choice(name: &#x27;CHOICE&#x27;, choices: [&#x27;One&#x27;, &#x27;Two&#x27;, &#x27;Three&#x27;], description: &#x27;Pick something&#x27;)</span><br><span class="line"></span><br><span class="line">        password(name: &#x27;PASSWORD&#x27;, defaultValue: &#x27;SECRET&#x27;, description: &#x27;Enter a password&#x27;)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(&#x27;Example&#x27;) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                echo &quot;Hello $&#123;params.PERSON&#125;&quot;</span><br><span class="line"></span><br><span class="line">                echo &quot;Biography: $&#123;params.BIOGRAPHY&#125;&quot;</span><br><span class="line"></span><br><span class="line">                echo &quot;Toggle: $&#123;params.TOGGLE&#125;&quot;</span><br><span class="line"></span><br><span class="line">                echo &quot;Choice: $&#123;params.CHOICE&#125;&quot;</span><br><span class="line"></span><br><span class="line">                echo &quot;Password: $&#123;params.PASSWORD&#125;&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="triggers触发器"><a href="#triggers触发器" class="headerlink" title="triggers触发器"></a>triggers触发器</h2><p>定义流水线触发的一些机制与条件，流水线支持的触发器有三种：cron, pollSCM 和 upstream<br> <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">triggers&#123;</span><br><span class="line">   cron(&#x27;H */4 * * 1-5&#x27;) //周一到周五每隔四小时执行构建</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>H关键字，H亦即Hash，表示当前位置跨度范围内随机一值</p>
+<p>jenkins定时语法:</p>
+<table>
+<thead>
+<tr>
+<th align="left">MINUTE</th>
+<th align="left">HOUR</th>
+<th align="left">DOM</th>
+<th align="left">MONTH</th>
+<th align="left">DOW</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Minutes within the hour (0–59)</td>
+<td align="left">The hour of the day (0–23)</td>
+<td align="left">The day of the month (1–31)</td>
+<td align="left">The month (1–12)</td>
+<td align="left">The day of the week (0–7) where 0 and 7 are Sunday.</td>
+</tr>
+</tbody></table>
+<ul>
+<li>星号:匹配所有值</li>
+<li>M-N: 匹配M到N之间的值</li>
+<li>M-N&#x2F;X or *&#x2F;X:  范围内X值为步长</li>
+<li>A,B: A或者B</li>
+</ul>
+<h2 id="tools构建工具"><a href="#tools构建工具" class="headerlink" title="tools构建工具"></a>tools构建工具</h2><p>定义部署流程中常用的一些工具，这些工具在管理Jenkins—&gt;Global Tool Configuration中添加，然后在项目中引用</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line">    tools &#123;</span><br><span class="line">        maven &#x27;maven&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(&#x27;Example&#x27;) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &#x27;mvn --version&#x27;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="stages"><a href="#stages" class="headerlink" title="stages"></a>stages</h2><p>包含一系列一个或多个 stage 指令</p>
+<h3 id="stage"><a href="#stage" class="headerlink" title="stage"></a>stage</h3><p>stage用来描述大部分工作所在的位置</p>
+<h3 id="steps"><a href="#steps" class="headerlink" title="steps"></a>steps</h3><p>标识阶段之中具体的构建步骤，至少包含一个步骤，<strong>在stage中有且只能有一个steps</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stage(&#x27;名称&#x27;)&#123;</span><br><span class="line">    steps&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="parallel并行"><a href="#parallel并行" class="headerlink" title="parallel并行"></a>parallel并行</h3><p>parallel关键字用于指定某些阶段可以并行的情况。一个阶段必须只有一个 steps 或 parallel 的阶段</p>
+<p>通过添加 failFast true 到包含 parallel的 stage 中， 当其中一个进程失败时，你可以强制所有的 parallel 阶段都被终止。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent none</span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(&#x27;clean&#x27;) &#123;</span><br><span class="line">            failFast true</span><br><span class="line">            parallel&#123;</span><br><span class="line">                stage(&#x27;Node_1&#x27;)&#123;</span><br><span class="line">                    agent &#123; label &#x27;Node_1&#x27; &#125;</span><br><span class="line">                    steps &#123;</span><br><span class="line">                      sh &#x27;echo &quot;task1&quot;&#x27;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">                stage(&#x27;Node_2&#x27;) &#123;</span><br><span class="line">                    agent &#123; label &#x27;Node_2&#x27; &#125;</span><br><span class="line">                    steps &#123;</span><br><span class="line">                       sh &#x27;echo &quot;task2&quot;&#x27;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="指令when"><a href="#指令when" class="headerlink" title="指令when"></a>指令when</h3><p>允许流水线根据指定条件来确定是否执行该阶段</p>
+<ol>
+<li><p>branch 当正在构建的分支与给定的分支模式（ANT 样式路径 glob）匹配时执行该阶段</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">when &#123; branch &#x27;master&#x27; &#125;</span><br><span class="line">可选参数比较器</span><br><span class="line">when &#123; </span><br><span class="line">    branch pattern: &quot;release-\\d+&quot;, comparator: &quot;REGEXP&quot;</span><br><span class="line"></span><br><span class="line">    branch pattern: &quot;release-*&quot;, comparator: &quot;GLOB&quot; //Ant风格路径</span><br><span class="line"></span><br><span class="line">    branch pattern: &quot;release&quot;, comparator: &quot;EQUALS&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>environment 当指定的环境变量设置为给定值时执行该阶段</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stage(&#x27;Example Deploy&#x27;) &#123;</span><br><span class="line">    when &#123;</span><br><span class="line">        branch &#x27;production&#x27;</span><br><span class="line">        environment name: &#x27;DEPLOY_TO&#x27;, value: &#x27;production&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">    steps &#123;</span><br><span class="line">        echo &#x27;Deploying&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>equals 当期望值等于实际值时执行阶段，例如：when { equals expected: 2, actual: currentBuild.number }</p>
+</li>
+<li><p>not 当嵌套条件为假时执行该阶段。 必须包含一个条件。例如：when { not { branch ‘master’ } }</p>
+</li>
+<li><p>expression 当指定的 Groovy 表达式计算结果为真时执行该阶段，例如：when { expression { return params.DEBUG_BUILD } } 。请注意，当从表达式返回字符串时，它们必须转换为布尔值或返回空值以计算结果为假。</p>
+</li>
+<li><p>allOf,anyOf 当一个或者多个条件为真时 如when { anyOf { branch ‘master’; branch ‘staging’ } }</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">stage(&#x27;Example Deploy&#x27;) &#123;</span><br><span class="line">    when &#123;</span><br><span class="line">        branch &#x27;production&#x27;</span><br><span class="line">        anyOf &#123;</span><br><span class="line">            environment name: &#x27;DEPLOY_TO&#x27;, value: &#x27;production&#x27;</span><br><span class="line">            environment name: &#x27;DEPLOY_TO&#x27;, value: &#x27;staging&#x27;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    steps &#123;</span><br><span class="line">        echo &#x27;Deploying&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>triggeredBy 根据触发原因</p>
+</li>
+</ol>
+<ul>
+<li>when { triggeredBy ‘SCMTrigger’ }</li>
+<li>when { triggeredBy ‘TimerTrigger’ }</li>
+<li>when { triggeredBy ‘BuildUpstreamCause’ }</li>
+<li>when { triggeredBy cause: “UserIdCause”, detail: “vlinde” }</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
       </categories>
   </entry>
 </search>
