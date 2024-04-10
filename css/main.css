@@ -433,7 +433,7 @@ pre {
   color: #9e9e9e;
   line-height: 1.6;
   margin: 0 auto 20px;
-  font-size: 10px;
+  font-size: 12px;
 }
 pre,
 code {
@@ -1214,7 +1214,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #c3fe4e;
+  background: #a626f1;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
