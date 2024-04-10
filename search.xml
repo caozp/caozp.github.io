@@ -124,6 +124,275 @@
       </categories>
   </entry>
   <entry>
+    <title>find查找文件</title>
+    <url>/posts/89021aa2/</url>
+    <content><![CDATA[<h1 id="find"><a href="#find" class="headerlink" title="find"></a>find</h1><p>用来在指定目录下查找文件。任何位于参数之前的字符串都将被视为欲查找的目录名。如果使用该命令时，不设置任何参数，则find命令将在当前目录下查找子目录与文件。并且将查找到的子目录和文件全部进行显示。</p>
+<span id="more"></span>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find(选项)(参数)</span><br><span class="line"></span><br><span class="line">比较常用的参数:</span><br><span class="line">-prune：不寻找字符串作为寻找文件或目录的范本样式;</span><br><span class="line">-maxdepth&lt;目录层级&gt;：设置最大目录层级；</span><br><span class="line">-mindepth&lt;目录层级&gt;：设置最小目录层级；</span><br><span class="line">-path&lt;范本样式&gt;：指定字符串作为寻找目录的范本样式；</span><br><span class="line">-regex&lt;范本样式&gt;：指定字符串作为寻找文件或目录的范本样式；</span><br><span class="line">-size&lt;文件大小&gt;：查找符合指定的文件大小的文件；</span><br><span class="line">-name&lt;范本样式&gt;：指定字符串作为寻找文件或目录的范本样式</span><br><span class="line">-depth：从指定目录下最深层的子目录开始查找；</span><br><span class="line">-empty：寻找文件大小为0 Byte的文件，或目录下没有任何子目录或文件的空目录；</span><br><span class="line">-exec&lt;执行指令&gt;：假设find指令的回传值为True，就执行该指令；</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h3 id="基于名字查找-name"><a href="#基于名字查找-name" class="headerlink" title="基于名字查找-name"></a>基于名字查找-name</h3><p>在<code>/home</code>目录下查找以.txt结尾的文件名</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /home -name &quot;*.txt&quot;</span><br></pre></td></tr></table></figure>
+
+<p>在当前目录及子目录下查找所有以.txt和.pdf结尾的文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . \( -name &quot;*.txt&quot; -o -name &quot;*.pdf&quot; \)</span><br><span class="line"></span><br><span class="line">或</span><br><span class="line"></span><br><span class="line">find . -name &quot;*.txt&quot; -o -name &quot;*.pdf&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="基于路径查找-path"><a href="#基于路径查找-path" class="headerlink" title="基于路径查找-path"></a>基于路径查找-path</h3><p>匹配文件路径或者文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /usr/ -path &quot;*local*&quot;</span><br></pre></td></tr></table></figure>
+<p>查找路径下所有example&#x2F;pubspec.yaml的文件,可以看到-path是支持Ant风格路径</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">find . -path &quot;**/example/pubspec.yaml&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="否定参数"><a href="#否定参数" class="headerlink" title="否定参数"></a>否定参数</h3><p>找出&#x2F;home下不是以.txt结尾的文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /home ! -name &quot;*.txt&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="基于正则表达式匹配文件路径"><a href="#基于正则表达式匹配文件路径" class="headerlink" title="基于正则表达式匹配文件路径"></a>基于正则表达式匹配文件路径</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -regex &quot;.*\(\.txt\|\.pdf\)$&quot;</span><br></pre></td></tr></table></figure>
+
+<p>同上，但忽略大小写</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -iregex &quot;.*\(\.txt\|\.pdf\)$&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="基于目录深度搜索"><a href="#基于目录深度搜索" class="headerlink" title="基于目录深度搜索"></a>基于目录深度搜索</h3><p>向下最大深度限制为3</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -maxdepth 3 -type f</span><br></pre></td></tr></table></figure>
+
+<p>搜索出深度距离当前目录至少2个子目录的所有文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -mindepth 2 -type f</span><br></pre></td></tr></table></figure>
+
+<h3 id="根据文件大小进行匹配"><a href="#根据文件大小进行匹配" class="headerlink" title="根据文件大小进行匹配"></a>根据文件大小进行匹配</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -size 文件大小单元</span><br></pre></td></tr></table></figure>
+
+<p>文件大小单元：</p>
+<ul>
+<li><strong>b</strong>  —— 块（512字节）</li>
+<li><strong>c</strong>  —— 字节</li>
+<li><strong>w</strong>  —— 字（2字节）</li>
+<li><strong>k</strong>  —— 千字节</li>
+<li><strong>M</strong>  —— 兆字节</li>
+<li><strong>G</strong>  —— 吉字节</li>
+</ul>
+<p>搜索大于10KB的文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -size +10k</span><br></pre></td></tr></table></figure>
+
+<p>搜索小于10KB的文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -size -10k</span><br></pre></td></tr></table></figure>
+
+<p>搜索等于10KB的文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -size 10k</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除匹配文件"><a href="#删除匹配文件" class="headerlink" title="删除匹配文件"></a>删除匹配文件</h3><p>删除当前目录下所有.txt文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -name &quot;*.txt&quot; -delete</span><br></pre></td></tr></table></figure>
+
+<h3 id="借助-exec选项与其他命令结合使用"><a href="#借助-exec选项与其他命令结合使用" class="headerlink" title="借助-exec选项与其他命令结合使用"></a>借助<code>-exec</code>选项与其他命令结合使用</h3><p>找出当前目录下所有root的文件，并把所有权更改为用户tom</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -user root -exec chown tom &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+
+<p>上例中， <strong>{}</strong>  用于与 <strong>-exec</strong> 选项结合使用来匹配所有文件，然后会被替换为相应的文件名。</p>
+<p>找出自己家目录下所有的.txt文件并删除</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find $HOME/. -name &quot;*.txt&quot; -ok rm &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+
+<p>上例中， <strong>-ok</strong> 和 <strong>-exec</strong> 行为一样，不过它会给出提示，是否执行相应的操作。</p>
+<p>查找当前目录下所有.txt文件并把他们拼接起来写入到all.txt文件中</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -name &quot;*.txt&quot; -exec cat &#123;&#125; \;&gt; /all.txt</span><br></pre></td></tr></table></figure>
+
+<p>将30天前的.log文件移动到old目录中</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -mtime +30 -name &quot;*.log&quot; -exec cp &#123;&#125; old \;</span><br></pre></td></tr></table></figure>
+
+<p>找出当前目录下所有.txt文件并以“File:文件名”的形式打印出来</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -name &quot;*.txt&quot; -exec printf &quot;File: %s\n&quot; &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+
+<p>因为单行命令中-exec参数中无法使用多个命令，以下方法可以实现在-exec之后接受多条命令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">-exec ./text.sh &#123;&#125; \;</span><br></pre></td></tr></table></figure>
+
+<h3 id="搜索但跳过指定的目录"><a href="#搜索但跳过指定的目录" class="headerlink" title="搜索但跳过指定的目录"></a>搜索但跳过指定的目录</h3><p>查找当前目录或者子目录下所有.txt文件，但是跳过子目录sk</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -path &quot;./sk&quot; -prune -o -name &quot;*.txt&quot; -print</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>:warning: .&#x2F;sk 不能写成 .&#x2F;sk&#x2F; ，否则没有作用。</p>
+</blockquote>
+<p>忽略两个目录</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . \( -path ./sk -o  -path ./st \) -prune -o -name &quot;*.txt&quot; -print</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>:warning: 如果写相对路径必须加上<code>./</code></p>
+</blockquote>
+<h3 id="find其他技巧收集"><a href="#find其他技巧收集" class="headerlink" title="find其他技巧收集"></a>find其他技巧收集</h3><p>要列出所有长度为零的文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -empty</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>linux文件管理</title>
+    <url>/posts/3fd89380/</url>
+    <content><![CDATA[<h1 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h1><p>在linux系统中，可以说一切（包括目录、普通文件、设备文件等）皆为文件。文件类型包含有普通文件、目录、字符设备文件、块设备文件、符号链接文件、管道文件等等。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls -ls时，第一列(如lrwxr-xr-x)的第一个字符(l)就是用来区分文件类型的。</span><br><span class="line"></span><br><span class="line">常见的种类有:</span><br><span class="line">1.  d 表示是目录</span><br><span class="line">2.  - 表示是文件</span><br><span class="line">3.  l 表示为链接文件</span><br><span class="line">4.  b 表示块设备和其他外围设备</span><br><span class="line">5.  c 字符设备文件</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+
+<h2 id="链接文件"><a href="#链接文件" class="headerlink" title="链接文件"></a>链接文件</h2><p>通过如下命令</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; % ls -l /etc/localtime</span><br><span class="line">lrwxr-xr-x  1 root  wheel  39  5 23 14:10 /etc/localtime -&gt; /var/db/timezone/zoneinfo/Asia/Shanghai</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>可以看到&#x2F;etc&#x2F;localtime指向&#x2F;var&#x2F;db&#x2F;timezone&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai</p>
+<p>在linux系统中，链接可分为两种:一种为硬链接，另一种为软链接或符号链接。</p>
+<h3 id="ln命令"><a href="#ln命令" class="headerlink" title="ln命令"></a>ln命令</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">硬链接  ln 源文件 目标文件 </span><br><span class="line">软链接  ln -s 源文件 目标文件 （目标文件不能事先存在）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>源文件：指定链接的源文件。如果使用<code>-s</code>选项创建软链接，则“源文件”可以是文件或者目录。创建硬链接时，则“源文件”参数只能是文件。</li>
+<li>目标文件：指定源文件的目标链接文件。</li>
+</ul>
+<h3 id="软链接"><a href="#软链接" class="headerlink" title="软链接"></a>软链接</h3><p>在目录<code>/usr/liu</code>下建立一个符号链接文件abc，使它指向目录<code>/usr/mengqc/mub1</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ln -s /usr/mengqc/mub1 /usr/liu/abc</span><br></pre></td></tr></table></figure>
+<p>也就是读取&#x2F;usr&#x2F;liu&#x2F;abc时，实际访问的是&#x2F;usr&#x2F;mengqc&#x2F;mub1</p>
+<h3 id="硬链接"><a href="#硬链接" class="headerlink" title="硬链接"></a>硬链接</h3><p>给文件创建硬链接，为 <code>myfile</code> 创建硬链接 <code>hard</code>，<code>myfile</code> 与 <code>hard</code> 的文件 <code>inode</code> 值相同，它指向了物理硬盘的一个区块</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ touch myfile &amp;&amp; echo &quot;This is a plain text file.&quot; &gt; myfile</span><br><span class="line">$ cat myfile</span><br><span class="line">This is a plain text file.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ ln myfile hard</span><br><span class="line">$ ls -li</span><br><span class="line">25869085 -rw-r--r--  2 unixzii  staff  27  7  8 17:39 hard</span><br><span class="line">25869085 -rw-r--r--  2 unixzii  staff  27  7  8 17:39 myfile</span><br><span class="line">                   链接数为2</span><br></pre></td></tr></table></figure>
+
+<p>在默认情况下，ln命令创建硬链接。ln命令会增加链接数，rm命令会减少链接数。一个文件除非链接数为0，否则不会从文件系统中被物理地删除。</p>
+<h1 id="文件属组和文件权限"><a href="#文件属组和文件权限" class="headerlink" title="文件属组和文件权限"></a>文件属组和文件权限</h1><p>一个文件对于不同属组，不同所有者有不同的读写权限。</p>
+<p>文件的基本权限包含如下：</p>
+<table>
+<thead>
+<tr>
+<th>字母</th>
+<th>含义</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>r</td>
+<td>读</td>
+<td>4</td>
+</tr>
+<tr>
+<td>w</td>
+<td>写</td>
+<td>2</td>
+</tr>
+<tr>
+<td>x</td>
+<td>执行</td>
+<td>1</td>
+</tr>
+<tr>
+<td>-</td>
+<td>无</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<p>文件属性第一列(如:lrwxr-xr-x)的第二到第十个字符(rwxr-x-wx)定义了不同用户组对该文件的访问权限</p>
+<table>
+<thead>
+<tr>
+<th>2-4字符</th>
+<th>5-7字符</th>
+<th>8-10字符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件所有者权限</td>
+<td>文件所属组</td>
+<td>其他用户组</td>
+</tr>
+</tbody></table>
+<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>想要对文件操作必须有对应的权限。</p>
+<p>修改权限可以使用全数字的方式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">chmod 740 file </span><br></pre></td></tr></table></figure>
+
+<p>或者,使用对对应组用户赋予对应权限</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">u g o a 分别是user,group,other,all的意思。</span><br><span class="line">+,-,=代表增加权限，删除权限，或者直接赋于权限</span><br><span class="line">chmod u=rwx,g=rx,o=r  test1</span><br><span class="line">chmod u+rx test2</span><br><span class="line">chmod a-x  test3</span><br></pre></td></tr></table></figure>
+
+<h2 id="修改所属用户与组"><a href="#修改所属用户与组" class="headerlink" title="修改所属用户与组"></a>修改所属用户与组</h2><p>可以修改文件的所属组</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">chown [–R] 属主名 文件名</span><br><span class="line">chown [-R] 属主名：属组名 文件名</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>trap捕获信号</title>
+    <url>/posts/50609df4/</url>
+    <content><![CDATA[<h1 id="trap"><a href="#trap" class="headerlink" title="trap"></a>trap</h1><p>捕捉信号和其他事件并执行命令。</p>
+<span id="more"></span>
+
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">trap [-lp] [[arg] signal_spec ...]</span><br></pre></td></tr></table></figure>
+
+<h2 id="主要用途"><a href="#主要用途" class="headerlink" title="主要用途"></a>主要用途</h2><ul>
+<li>用于指定在接收到信号后将要采取的动作。</li>
+<li>脚本程序被中断时执行清理工作。</li>
+</ul>
+<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">-l    打印信号名称以及信号名称对应的数字。</span><br><span class="line">-p    显示与每个信号关联的trap命令。</span><br></pre></td></tr></table></figure>
+
+<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">arg：接收到信号时执行的命令。</span><br><span class="line">signal_spec：信号名称或信号名称对应的数字。</span><br></pre></td></tr></table></figure>
+<h2 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h2><p>如果表达式执行结果为成功时返回0，当参数 <code>signal_spec</code> 没有指定有效值时返回1。</p>
+<h2 id="关于信号"><a href="#关于信号" class="headerlink" title="关于信号"></a>关于信号</h2><p>信号是一种进程间通信机制，它给应用程序提供一种异步的软件中断，使应用程序有机会接受其他程序活终端发送的命令(即信号)。应用程序收到信号后，有三种处理方式：忽略，默认，或捕捉。进程收到一个信号后，会检查对该信号的处理机制。如果是SIG_IGN，就忽略该信号；如果是SIG_DFT，则会采用系统默认的处理动作，通常是终止进程或忽略该信号；如果给该信号指定了一个处理函数(捕捉)，则会中断当前进程正在执行的任务，转而去执行该信号的处理函数，返回后再继续执行被中断的任务。</p>
+<p>在有些情况下，我们不希望自己的shell脚本在运行时刻被中断，比如说我们写得shell脚本设为某一用户的默认shell，使这一用户进入系统后只能作某一项工作，如数据库备份， 我们可不希望用户使用 Ctrl+C 等方法进入到shell状态做我们不希望做的事情。这便用到了信号处理。</p>
+<p>以下是一些你可能会遇到的常见信号：</p>
+<table>
+<thead>
+<tr>
+<th>信号名称</th>
+<th>信号数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIGHUP</td>
+<td>1</td>
+<td>本信号在用户终端连接（正常或非正常）结束时发出，通常是在终端的控制进程结束时，通知同一session内的各个作业，这时它们与控制终端不再关联。登录Linux时，系统会分配给登录用户一个终端(Session)。在这个终端运行的所有程序，包括前台进程组和后台进程组，一般都属于这个Session。当用户退出Linux登录时，前台进程组和后台有对终端输出的进程将会收到SIGHUP信号。这个信号的默认操作为终止进程，因此前台进程组和后台有终端输出的进程就会中止。对于与终端脱离关系的守护进程，这个信号用于通知它重新读取配置文件。</td>
+</tr>
+<tr>
+<td>SIGINT</td>
+<td>2</td>
+<td>程序终止(interrupt)信号，在用户键入 Ctrl+C 时发出。</td>
+</tr>
+<tr>
+<td>SIGQUIT</td>
+<td>3</td>
+<td>和SIGINT类似，但由QUIT字符(通常是Ctrl+\)来控制。进程在因收到SIGQUIT退出时会产生core文件，在这个意义上类似于一个程序错误信号。</td>
+</tr>
+<tr>
+<td>SIGFPE</td>
+<td>8</td>
+<td>在发生致命的算术运算错误时发出。不仅包括浮点运算错误，还包括溢出及除数为0等其它所有的算术错误。</td>
+</tr>
+<tr>
+<td>SIGKILL</td>
+<td>9</td>
+<td>用来立即结束程序的运行。本信号不能被阻塞，处理和忽略。</td>
+</tr>
+<tr>
+<td>SIGALRM</td>
+<td>14</td>
+<td>时钟定时信号，计算的是实际的时间或时钟时间。alarm 函数使用该信号。</td>
+</tr>
+<tr>
+<td>SIGTERM</td>
+<td>15</td>
+<td>程序结束(terminate)信号, 与SIGKILL不同的是该信号可以被阻塞和处理. 通常用来要求程序自己正常退出；kill 命令缺省产生这个信号。</td>
+</tr>
+</tbody></table>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>当shell收到 <code>HUP INT PIPE QUIT TERM</code> 这几个命令时，当前执行的程序会执行 <code>exit 1</code>。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@pc root]$ trap &quot;exit 1&quot; HUP INT PIPE QUIT TERM</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-清理临时文件"><a href="#1-清理临时文件" class="headerlink" title="1 清理临时文件"></a>1 清理临时文件</h3><p>下面展示了如果有人试图从终端中止程序时，如何删除文件然后退出：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">trap &quot;rm -f $WORKDIR/work1 $WORKDIR/dataout; exit&quot; 2</span><br></pre></td></tr></table></figure>
+
+<p>执行shell程序，如果程序接收信号为2，那么这两个文件 （work1 和 dataout） 将被自动删除。</p>
+<p>添加信号1 <code>SIGHUP</code>：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">trap</span> <span class="string">&quot;rm -f <span class="variable">$WORKDIR</span>/work1 <span class="variable">$WORKDIR</span>/dataout; exit&quot;</span> 1 2</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-忽略信号"><a href="#2-忽略信号" class="headerlink" title="2 忽略信号"></a>2 忽略信号</h3><p>如果陷阱列出的命令是空的，指定的信号接收时，将被忽略：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">trap</span> <span class="string">&#x27;&#x27;</span> 2</span></span><br></pre></td></tr></table></figure>
+
+<p>忽略多个信号：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">trap</span> <span class="string">&#x27;&#x27;</span> 1 2 3 15</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="3-重置陷阱"><a href="#3-重置陷阱" class="headerlink" title="3 重置陷阱"></a>3 重置陷阱</h3><p>当你改变了收到信号后采取的动作，你可以省略第一个参数来重置到默认行为。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">trap</span> 1 2</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><ol>
+<li><code>trap -l</code> 等价于执行 <code>kill -l</code>。</li>
+<li>发送信号请查看 <code>kill</code> 命令。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+  </entry>
+  <entry>
     <title>shell脚本基础知识点</title>
     <url>/posts/acba6a0c/</url>
     <content><![CDATA[<h1 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>shell变量定义要求:</p>
@@ -291,6 +560,55 @@
 ]]></content>
       <categories>
         <category>shell</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>type显示指定命令的类型</title>
+    <url>/posts/784c8df/</url>
+    <content><![CDATA[<h1 id="type"><a href="#type" class="headerlink" title="type"></a>type</h1><h2 id="主要用途"><a href="#主要用途" class="headerlink" title="主要用途"></a>主要用途</h2><ul>
+<li>显示要查找的命令的信息。</li>
+<li>控制查找范围和行为。</li>
+<li>显示要查找的命令优先级最高的类型。</li>
+</ul>
+<span id="more"></span>
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">type [-afptP] name [name ...]</span><br><span class="line"></span><br><span class="line">name：要查找的命令，可以为多个。</span><br></pre></td></tr></table></figure>
+
+<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">-a：在环境变量PATH中查找并显示所有包含name的可执行文件路径；当&#x27;-p&#x27;选项没有同时给出时，如果在别名、关键字，函数，内建的信息中存在name，则一并显示。</span><br><span class="line">-f：排除对shell函数的查找。</span><br><span class="line">-p：如果name在执行&#x27;type -t name&#x27;返回的不是&#x27;file&#x27;，那么什么也不返回；否则会在环境变量PATH中查找并返回可执行文件路径。</span><br><span class="line">-P：即使要查找的name是别名、内建、函数中的一个，仍然会在环境变量PATH中查找并返回可执行文件路径。</span><br><span class="line">-t：根据name的类型返回一个单词（别名，关键字，函数，内建，文件），否则返回空值。</span><br></pre></td></tr></table></figure>
+
+<h2 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h2><p>当指定的命令可以找到时返回成功，如果有没找到的返回失败。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>接下来要用到的例子假设’~&#x2F;.bashrc’文件定义了以下的内容：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">alias ls=&#x27;ls --color=auto&#x27;</span><br><span class="line">mybash()&#123; vim ~/.bashrc; &#125;</span><br></pre></td></tr></table></figure>
+<p>而且执行环境里没有使用enable禁用内建命令。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">mybash is a function</span><br><span class="line">mybash ()</span><br><span class="line">&#123;</span><br><span class="line">    vim ~/.bashrc</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a -f mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出（因为排除了函数，所以报错）</span></span><br><span class="line">bash: type: mybash: not found</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a -p mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出为空（因为排除了函数，所以什么也不返回）</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a <span class="built_in">ls</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">ls is aliased to `ls --color=suto&#x27;</span><br><span class="line">ls is /usr/bin/ls</span><br><span class="line">ls is /bin/ls</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a -p <span class="built_in">ls</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">/usr/bin/ls</span><br><span class="line">/bin/ls</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">&#x27;-f&#x27;</span>不会影响<span class="string">&#x27;-P&#x27;</span>的范围，<span class="string">&#x27;-f&#x27;</span>不建议和<span class="string">&#x27;-p&#x27;</span>使用。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">注意：<span class="built_in">printf</span>同时是内建命令以及可执行文件（GNU coreutils），优先作为内建处理。</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -p <span class="built_in">printf</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出为空</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -P <span class="built_in">printf</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">/usr/bin/printf</span><br><span class="line">/bin/printf</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果有多个类型，那么输出优先级最高的类型。</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t <span class="built_in">ls</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">alias</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t <span class="keyword">for</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出（bash关键字）</span></span><br><span class="line">keyword</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">function</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t -f mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出空值</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t <span class="built_in">printf</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出（bash内建优先级高）</span></span><br><span class="line">builtin</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t <span class="built_in">chmod</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">file</span><br></pre></td></tr></table></figure>
+
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><ol>
+<li>该命令是bash内建命令，相关的帮助信息请查看<code>help</code>命令。</li>
+<li>命令优先级问题请查看<code>builtin</code>命令。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>正则表达式</title>
+    <url>/posts/2f57a694/</url>
+    <content><![CDATA[<h1 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h1><h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><p>正则表达式分为两类</p>
+<ul>
+<li>基本正则表达式 BRE</li>
+<li>扩展正则表达式 ERE</li>
+</ul>
+<span id="more"></span>
+<h2 id="基本正则表达式"><a href="#基本正则表达式" class="headerlink" title="基本正则表达式"></a>基本正则表达式</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">^         用于模式最左侧，如&quot;^boy&quot;,匹配以boy单词开头的行</span><br><span class="line">$         用于模式最左侧，如&quot;boy$&quot;,匹配以boy单词结尾的行</span><br><span class="line">^$        匹配空行</span><br><span class="line">\         转义，让特殊含义的字符显示原意</span><br><span class="line">*         匹配前一个字符连续出现0或1次以上</span><br><span class="line">.*        匹配所有内容</span><br><span class="line">^.*       匹配任意多个字符开头的内容</span><br><span class="line">.*$       匹配任意多个字符结尾的内容</span><br><span class="line">[abc]     匹配[]的任意一个字符，a或b或c</span><br><span class="line">[^abc]    与上面相反，非a非b非c的任意字符</span><br><span class="line">\&lt;        如:&#x27;\&lt;grep&#x27;匹配包含以grep开头的单词的行</span><br><span class="line">\&gt;        如:&#x27;grep\&gt;&#x27;匹配包含以grep结尾的单词的行</span><br></pre></td></tr></table></figure>
+
+<h2 id="扩展正则表达式"><a href="#扩展正则表达式" class="headerlink" title="扩展正则表达式"></a>扩展正则表达式</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">+         匹配前一个字符 1次或多次</span><br><span class="line">[]+       匹配括号内的字符 1次或多次</span><br><span class="line">?         匹配前一个字符 0次或1次 </span><br><span class="line">|         同时过滤多个字符串</span><br><span class="line">()        被括起来的作为整体</span><br><span class="line">a&#123;n,m&#125;    匹配前一字符，最少n次，最多m次</span><br><span class="line">a&#123;n,&#125;     匹配前一字符，最少n次</span><br><span class="line">a&#123;n&#125;      匹配前一字符正好n次</span><br><span class="line">a&#123;,m&#125;     匹配前一字符，最多m次</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>linux</category>
       </categories>
   </entry>
   <entry>
@@ -627,426 +945,6 @@
       </categories>
   </entry>
   <entry>
-    <title>linux文件管理</title>
-    <url>/posts/3fd89380/</url>
-    <content><![CDATA[<h1 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h1><p>在linux系统中，可以说一切（包括目录、普通文件、设备文件等）皆为文件。文件类型包含有普通文件、目录、字符设备文件、块设备文件、符号链接文件、管道文件等等。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ls -ls时，第一列(如lrwxr-xr-x)的第一个字符(l)就是用来区分文件类型的。</span><br><span class="line"></span><br><span class="line">常见的种类有:</span><br><span class="line">1.  d 表示是目录</span><br><span class="line">2.  - 表示是文件</span><br><span class="line">3.  l 表示为链接文件</span><br><span class="line">4.  b 表示块设备和其他外围设备</span><br><span class="line">5.  c 字符设备文件</span><br></pre></td></tr></table></figure>
-<span id="more"></span>
-
-<h2 id="链接文件"><a href="#链接文件" class="headerlink" title="链接文件"></a>链接文件</h2><p>通过如下命令</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-&gt; % ls -l /etc/localtime</span><br><span class="line">lrwxr-xr-x  1 root  wheel  39  5 23 14:10 /etc/localtime -&gt; /var/db/timezone/zoneinfo/Asia/Shanghai</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>可以看到&#x2F;etc&#x2F;localtime指向&#x2F;var&#x2F;db&#x2F;timezone&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai</p>
-<p>在linux系统中，链接可分为两种:一种为硬链接，另一种为软链接或符号链接。</p>
-<h3 id="ln命令"><a href="#ln命令" class="headerlink" title="ln命令"></a>ln命令</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">硬链接  ln 源文件 目标文件 </span><br><span class="line">软链接  ln -s 源文件 目标文件 （目标文件不能事先存在）</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>源文件：指定链接的源文件。如果使用<code>-s</code>选项创建软链接，则“源文件”可以是文件或者目录。创建硬链接时，则“源文件”参数只能是文件。</li>
-<li>目标文件：指定源文件的目标链接文件。</li>
-</ul>
-<h3 id="软链接"><a href="#软链接" class="headerlink" title="软链接"></a>软链接</h3><p>在目录<code>/usr/liu</code>下建立一个符号链接文件abc，使它指向目录<code>/usr/mengqc/mub1</code></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ln -s /usr/mengqc/mub1 /usr/liu/abc</span><br></pre></td></tr></table></figure>
-<p>也就是读取&#x2F;usr&#x2F;liu&#x2F;abc时，实际访问的是&#x2F;usr&#x2F;mengqc&#x2F;mub1</p>
-<h3 id="硬链接"><a href="#硬链接" class="headerlink" title="硬链接"></a>硬链接</h3><p>给文件创建硬链接，为 <code>myfile</code> 创建硬链接 <code>hard</code>，<code>myfile</code> 与 <code>hard</code> 的文件 <code>inode</code> 值相同，它指向了物理硬盘的一个区块</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ touch myfile &amp;&amp; echo &quot;This is a plain text file.&quot; &gt; myfile</span><br><span class="line">$ cat myfile</span><br><span class="line">This is a plain text file.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$ ln myfile hard</span><br><span class="line">$ ls -li</span><br><span class="line">25869085 -rw-r--r--  2 unixzii  staff  27  7  8 17:39 hard</span><br><span class="line">25869085 -rw-r--r--  2 unixzii  staff  27  7  8 17:39 myfile</span><br><span class="line">                   链接数为2</span><br></pre></td></tr></table></figure>
-
-<p>在默认情况下，ln命令创建硬链接。ln命令会增加链接数，rm命令会减少链接数。一个文件除非链接数为0，否则不会从文件系统中被物理地删除。</p>
-<h1 id="文件属组和文件权限"><a href="#文件属组和文件权限" class="headerlink" title="文件属组和文件权限"></a>文件属组和文件权限</h1><p>一个文件对于不同属组，不同所有者有不同的读写权限。</p>
-<p>文件的基本权限包含如下：</p>
-<table>
-<thead>
-<tr>
-<th>字母</th>
-<th>含义</th>
-<th>数值</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>r</td>
-<td>读</td>
-<td>4</td>
-</tr>
-<tr>
-<td>w</td>
-<td>写</td>
-<td>2</td>
-</tr>
-<tr>
-<td>x</td>
-<td>执行</td>
-<td>1</td>
-</tr>
-<tr>
-<td>-</td>
-<td>无</td>
-<td>0</td>
-</tr>
-</tbody></table>
-<p>文件属性第一列(如:lrwxr-xr-x)的第二到第十个字符(rwxr-x-wx)定义了不同用户组对该文件的访问权限</p>
-<table>
-<thead>
-<tr>
-<th>2-4字符</th>
-<th>5-7字符</th>
-<th>8-10字符</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>文件所有者权限</td>
-<td>文件所属组</td>
-<td>其他用户组</td>
-</tr>
-</tbody></table>
-<h2 id="修改文件权限"><a href="#修改文件权限" class="headerlink" title="修改文件权限"></a>修改文件权限</h2><p>想要对文件操作必须有对应的权限。</p>
-<p>修改权限可以使用全数字的方式</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">chmod 740 file </span><br></pre></td></tr></table></figure>
-
-<p>或者,使用对对应组用户赋予对应权限</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">u g o a 分别是user,group,other,all的意思。</span><br><span class="line">+,-,=代表增加权限，删除权限，或者直接赋于权限</span><br><span class="line">chmod u=rwx,g=rx,o=r  test1</span><br><span class="line">chmod u+rx test2</span><br><span class="line">chmod a-x  test3</span><br></pre></td></tr></table></figure>
-
-<h2 id="修改所属用户与组"><a href="#修改所属用户与组" class="headerlink" title="修改所属用户与组"></a>修改所属用户与组</h2><p>可以修改文件的所属组</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">chown [–R] 属主名 文件名</span><br><span class="line">chown [-R] 属主名：属组名 文件名</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>用wc命令来统计字符数</title>
-    <url>/posts/270bc33d/</url>
-    <content><![CDATA[<h1 id="wc"><a href="#wc" class="headerlink" title="wc"></a>wc</h1><p>统计文件的字节数、字数、行数</p>
-<h2 id="补充说明"><a href="#补充说明" class="headerlink" title="补充说明"></a>补充说明</h2><p><strong>wc命令</strong> 统计指定文件中的字节数、字数、行数，并将统计结果显示输出。利用wc指令我们可以计算文件的Byte数、字数或是列数，若不指定文件名称，或是所给予的文件名为“-”，则wc指令会从标准输入设备读取数据。wc同时也给出所指定文件的总统计数。</p>
-<span id="more"></span>
-<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc(选项)(参数)</span><br><span class="line">wc [选项]... [文件]...</span><br><span class="line">wc [选项]... --files0-from=F</span><br></pre></td></tr></table></figure>
-
-<h3 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">-c # 统计字节数，或--bytes：显示Bytes数。</span><br><span class="line">-l # 统计行数，或--lines：显示列数。</span><br><span class="line">-m # 统计字符数，或--chars：显示字符数。</span><br><span class="line">-w # 统计字数，或--words：显示字数。一个字被定义为由空白、跳格或换行字符分隔的字符串。</span><br><span class="line">-L # 打印最长行的长度，或--max-line-length。</span><br><span class="line">-help     # 显示帮助信息。</span><br><span class="line">--version # 显示版本信息。</span><br></pre></td></tr></table></figure>
-
-<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><p>文件：需要统计的文件列表。</p>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc -l *       # 统计当前目录下的所有文件行数及总计行数。</span><br><span class="line">wc -l *.js    # 统计当前目录下的所有 .js 后缀的文件行数及总计行数。</span><br><span class="line">find  . * | xargs wc -l # 当前目录以及子目录的所有文件行数及总计行数。</span><br></pre></td></tr></table></figure>
-
-<p>查看文件的字节数、字数、行数</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc test.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出结果</span></span><br><span class="line">7     8     70     test.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">行数 单词数 字节数 文件名</span></span><br></pre></td></tr></table></figure>
-
-<p>用wc命令怎么做到只打印统计数字不打印文件名</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc -l &lt; test.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出结果</span></span><br><span class="line">7</span><br></pre></td></tr></table></figure>
-
-<p>用来统计当前目录下的文件数(不包含隐藏文件)</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">要去除TOTAL行</span></span><br><span class="line">expr $(ls -l | wc -l) - 1</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出结果</span></span><br><span class="line">8</span><br></pre></td></tr></table></figure>
-
-<p>统计当前目录下的所有文件行数及总计行数</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@centos7 ~]# wc -l *</span><br><span class="line">      21 LICENSE</span><br><span class="line">     270 README.md</span><br><span class="line">wc: example: read: Is a directory</span><br><span class="line">     785 lerna-debug.log</span><br><span class="line">      25 lerna.json</span><br><span class="line">wc: node_modules: read: Is a directory</span><br><span class="line">   23603 package-lock.json</span><br><span class="line">      79 package.json</span><br><span class="line">       3 renovate.json</span><br><span class="line">   24786 total</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>用cut命令来切割字符串</title>
-    <url>/posts/9b60227b/</url>
-    <content><![CDATA[<h1 id="Cut"><a href="#Cut" class="headerlink" title="Cut"></a>Cut</h1><h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cut（选项）（参数）</span><br><span class="line"></span><br><span class="line">-b：仅显示行中指定直接范围的内容；</span><br><span class="line">-c：仅显示行中指定范围的字符；</span><br><span class="line">-d：指定字段的分隔符，默认的字段分隔符为“TAB”；</span><br><span class="line">-f：显示指定字段的内容；</span><br><span class="line">-n：与“-b”选项连用，不分割多字节字符；</span><br><span class="line">--complement：补足被选择的字节、字符或字段；</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p>例如有一个学生报表信息，包含 No、Name、Mark、Percent：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cat test.txt</span><br><span class="line">No Name Mark Percent</span><br><span class="line">01 tom 69 91</span><br><span class="line">02 jack 71 87</span><br><span class="line">03 alex 68 98</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>使用  <strong>-f</strong>  选项提取指定字段（这里的 f 参数可以简单记忆为 <code>--fields</code>的缩写）：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -f 1 test.txt</span><br><span class="line">No</span><br><span class="line">01</span><br><span class="line">02</span><br><span class="line">03</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -f2,3 test.txt</span><br><span class="line">Name Mark</span><br><span class="line">tom 69</span><br><span class="line">jack 71</span><br><span class="line">alex 68</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p> <strong>–complement</strong>  选项提取指定字段之外的列（打印除了第二列之外的列）：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -f2 --complement test.txt</span><br><span class="line">No Mark Percent</span><br><span class="line">01 69 91</span><br><span class="line">02 71 87</span><br><span class="line">03 68 98</span><br></pre></td></tr></table></figure>
-
-<p>使用  <strong>-d</strong>  选项指定字段分隔符：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cat test2.txt</span><br><span class="line">No;Name;Mark;Percent</span><br><span class="line">01;tom;69;91</span><br><span class="line">02;jack;71;87</span><br><span class="line">03;alex;68;98</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -f2 -d&quot;;&quot; test2.txt</span><br><span class="line">Name</span><br><span class="line">tom</span><br><span class="line">jack</span><br><span class="line">alex</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="指定字段的字符或者字节范围"><a href="#指定字段的字符或者字节范围" class="headerlink" title="指定字段的字符或者字节范围"></a>指定字段的字符或者字节范围</h3><p>cut 命令可以将一串字符作为列来显示，字符字段的记法：</p>
-<ul>
-<li><strong>N-</strong> ：从第 N 个字节、字符、字段到结尾；</li>
-<li><strong>N-M</strong> ：从第 N 个字节、字符、字段到第 M 个（包括 M 在内）字节、字符、字段；</li>
-<li><strong>-M</strong> ：从第 1 个字节、字符、字段到第 M 个（包括 M 在内）字节、字符、字段。</li>
-</ul>
-<p>上面是记法，结合下面选项将摸个范围的字节、字符指定为字段：</p>
-<ul>
-<li><strong>-b</strong>  表示字节；</li>
-<li><strong>-c</strong>  表示字符；</li>
-<li><strong>-f</strong>  表示定义字段。</li>
-</ul>
-<p><strong>示例</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cat test.txt</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>打印第 1 个到第 3 个字符：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -c1-3 test.txt</span><br><span class="line">abc</span><br><span class="line">abc</span><br><span class="line">abc</span><br><span class="line">abc</span><br><span class="line">abc</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>打印前 2 个字符：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -c-2 test.txt</span><br><span class="line">ab</span><br><span class="line">ab</span><br><span class="line">ab</span><br><span class="line">ab</span><br><span class="line">ab</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>打印从第 5 个字符开始到结尾：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -c5- test.txt</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br></pre></td></tr></table></figure>
-
-<p>打印最后5个字符: </p>
-<p>遗憾的是, <code>cut</code>并没有提供最后字符的支持. 不过我们可以通过字符串反转来实现. </p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cat test.txt| rev | cut -c -5 | rev</span><br><span class="line">vwxyz</span><br><span class="line">vwxyz</span><br><span class="line">vwxyz</span><br><span class="line">vwxyz</span><br><span class="line">vwxyz</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>trap捕获信号</title>
-    <url>/posts/50609df4/</url>
-    <content><![CDATA[<h1 id="trap"><a href="#trap" class="headerlink" title="trap"></a>trap</h1><p>捕捉信号和其他事件并执行命令。</p>
-<span id="more"></span>
-
-<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">trap [-lp] [[arg] signal_spec ...]</span><br></pre></td></tr></table></figure>
-
-<h2 id="主要用途"><a href="#主要用途" class="headerlink" title="主要用途"></a>主要用途</h2><ul>
-<li>用于指定在接收到信号后将要采取的动作。</li>
-<li>脚本程序被中断时执行清理工作。</li>
-</ul>
-<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">-l    打印信号名称以及信号名称对应的数字。</span><br><span class="line">-p    显示与每个信号关联的trap命令。</span><br></pre></td></tr></table></figure>
-
-<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">arg：接收到信号时执行的命令。</span><br><span class="line">signal_spec：信号名称或信号名称对应的数字。</span><br></pre></td></tr></table></figure>
-<h2 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h2><p>如果表达式执行结果为成功时返回0，当参数 <code>signal_spec</code> 没有指定有效值时返回1。</p>
-<h2 id="关于信号"><a href="#关于信号" class="headerlink" title="关于信号"></a>关于信号</h2><p>信号是一种进程间通信机制，它给应用程序提供一种异步的软件中断，使应用程序有机会接受其他程序活终端发送的命令(即信号)。应用程序收到信号后，有三种处理方式：忽略，默认，或捕捉。进程收到一个信号后，会检查对该信号的处理机制。如果是SIG_IGN，就忽略该信号；如果是SIG_DFT，则会采用系统默认的处理动作，通常是终止进程或忽略该信号；如果给该信号指定了一个处理函数(捕捉)，则会中断当前进程正在执行的任务，转而去执行该信号的处理函数，返回后再继续执行被中断的任务。</p>
-<p>在有些情况下，我们不希望自己的shell脚本在运行时刻被中断，比如说我们写得shell脚本设为某一用户的默认shell，使这一用户进入系统后只能作某一项工作，如数据库备份， 我们可不希望用户使用 Ctrl+C 等方法进入到shell状态做我们不希望做的事情。这便用到了信号处理。</p>
-<p>以下是一些你可能会遇到的常见信号：</p>
-<table>
-<thead>
-<tr>
-<th>信号名称</th>
-<th>信号数</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>SIGHUP</td>
-<td>1</td>
-<td>本信号在用户终端连接（正常或非正常）结束时发出，通常是在终端的控制进程结束时，通知同一session内的各个作业，这时它们与控制终端不再关联。登录Linux时，系统会分配给登录用户一个终端(Session)。在这个终端运行的所有程序，包括前台进程组和后台进程组，一般都属于这个Session。当用户退出Linux登录时，前台进程组和后台有对终端输出的进程将会收到SIGHUP信号。这个信号的默认操作为终止进程，因此前台进程组和后台有终端输出的进程就会中止。对于与终端脱离关系的守护进程，这个信号用于通知它重新读取配置文件。</td>
-</tr>
-<tr>
-<td>SIGINT</td>
-<td>2</td>
-<td>程序终止(interrupt)信号，在用户键入 Ctrl+C 时发出。</td>
-</tr>
-<tr>
-<td>SIGQUIT</td>
-<td>3</td>
-<td>和SIGINT类似，但由QUIT字符(通常是Ctrl+\)来控制。进程在因收到SIGQUIT退出时会产生core文件，在这个意义上类似于一个程序错误信号。</td>
-</tr>
-<tr>
-<td>SIGFPE</td>
-<td>8</td>
-<td>在发生致命的算术运算错误时发出。不仅包括浮点运算错误，还包括溢出及除数为0等其它所有的算术错误。</td>
-</tr>
-<tr>
-<td>SIGKILL</td>
-<td>9</td>
-<td>用来立即结束程序的运行。本信号不能被阻塞，处理和忽略。</td>
-</tr>
-<tr>
-<td>SIGALRM</td>
-<td>14</td>
-<td>时钟定时信号，计算的是实际的时间或时钟时间。alarm 函数使用该信号。</td>
-</tr>
-<tr>
-<td>SIGTERM</td>
-<td>15</td>
-<td>程序结束(terminate)信号, 与SIGKILL不同的是该信号可以被阻塞和处理. 通常用来要求程序自己正常退出；kill 命令缺省产生这个信号。</td>
-</tr>
-</tbody></table>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>当shell收到 <code>HUP INT PIPE QUIT TERM</code> 这几个命令时，当前执行的程序会执行 <code>exit 1</code>。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@pc root]$ trap &quot;exit 1&quot; HUP INT PIPE QUIT TERM</span><br></pre></td></tr></table></figure>
-
-<h3 id="1-清理临时文件"><a href="#1-清理临时文件" class="headerlink" title="1 清理临时文件"></a>1 清理临时文件</h3><p>下面展示了如果有人试图从终端中止程序时，如何删除文件然后退出：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">trap &quot;rm -f $WORKDIR/work1 $WORKDIR/dataout; exit&quot; 2</span><br></pre></td></tr></table></figure>
-
-<p>执行shell程序，如果程序接收信号为2，那么这两个文件 （work1 和 dataout） 将被自动删除。</p>
-<p>添加信号1 <code>SIGHUP</code>：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">trap</span> <span class="string">&quot;rm -f <span class="variable">$WORKDIR</span>/work1 <span class="variable">$WORKDIR</span>/dataout; exit&quot;</span> 1 2</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-忽略信号"><a href="#2-忽略信号" class="headerlink" title="2 忽略信号"></a>2 忽略信号</h3><p>如果陷阱列出的命令是空的，指定的信号接收时，将被忽略：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">trap</span> <span class="string">&#x27;&#x27;</span> 2</span></span><br></pre></td></tr></table></figure>
-
-<p>忽略多个信号：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">trap</span> <span class="string">&#x27;&#x27;</span> 1 2 3 15</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="3-重置陷阱"><a href="#3-重置陷阱" class="headerlink" title="3 重置陷阱"></a>3 重置陷阱</h3><p>当你改变了收到信号后采取的动作，你可以省略第一个参数来重置到默认行为。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">trap</span> 1 2</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><ol>
-<li><code>trap -l</code> 等价于执行 <code>kill -l</code>。</li>
-<li>发送信号请查看 <code>kill</code> 命令。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>用tee命令重定向标准输出</title>
-    <url>/posts/aee075e4/</url>
-    <content><![CDATA[<h1 id="tee"><a href="#tee" class="headerlink" title="tee"></a>tee</h1><p>从标准输入读取数据并重定向到标准输出和文件。主要用于，需要同时查看数据内容并输出到文件时使用。</p>
-<span id="more"></span>
-
-<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">tee [OPTION]... [FILE]...</span><br><span class="line"></span><br><span class="line">FILE（可选）：要输出的文件，可以为一或多个。</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">长选项与短选项等价</span><br><span class="line"></span><br><span class="line">-a, --append               追加到文件中而不是覆盖。</span><br><span class="line">-i, --ignore-interrupts    忽略中断信号（Ctrl+c中断操作无效）。</span><br><span class="line">-p                         诊断写入非管道的错误。</span><br><span class="line">--output-error[=MODE]      设置写错误时的行为，请查看下方的MODE部分。</span><br><span class="line">--help                     显示帮助信息并退出。</span><br><span class="line">--version                  显示版本信息并退出。</span><br><span class="line"></span><br><span class="line">MODE决定了当出现写错误时的输出行为，可用的MODE如下：</span><br><span class="line"></span><br><span class="line">&#x27;warn&#x27;           当写入到任何输出报错时诊断。</span><br><span class="line">&#x27;warn-nopipe&#x27;    当写入到任何输出（而不是管道）报错时诊断。</span><br><span class="line">&#x27;exit&#x27;           当写入到任何输出报错时退出。</span><br><span class="line">&#x27;exit-nopipe&#x27;    当写入到任何输出（而不是管道）报错时退出。</span><br><span class="line"></span><br><span class="line">-p选项的指定的默认MODE为&#x27;warn-nopipe&#x27;。</span><br><span class="line">当&#x27;--output-error&#x27;没有在选项中时，默认的操作是当写入到管道报错时立刻退出，诊断错误信息并写入到非管道输出。</span><br></pre></td></tr></table></figure>
-
-<h2 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h2><p>返回状态为成功除非给出了非法选项或非法参数。</p>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将进程信息通过管道输出到标准输出（终端）并覆盖写入到文件中。</span></span><br><span class="line">ps -ef |tee info_a.log info_b.log</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将进程信息通过管道输出到标准输出（终端）并追加写入到文件中。</span></span><br><span class="line">ps -ef |tee -a info_a.log info_b.log</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>type显示指定命令的类型</title>
-    <url>/posts/784c8df/</url>
-    <content><![CDATA[<h1 id="type"><a href="#type" class="headerlink" title="type"></a>type</h1><h2 id="主要用途"><a href="#主要用途" class="headerlink" title="主要用途"></a>主要用途</h2><ul>
-<li>显示要查找的命令的信息。</li>
-<li>控制查找范围和行为。</li>
-<li>显示要查找的命令优先级最高的类型。</li>
-</ul>
-<span id="more"></span>
-<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">type [-afptP] name [name ...]</span><br><span class="line"></span><br><span class="line">name：要查找的命令，可以为多个。</span><br></pre></td></tr></table></figure>
-
-<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">-a：在环境变量PATH中查找并显示所有包含name的可执行文件路径；当&#x27;-p&#x27;选项没有同时给出时，如果在别名、关键字，函数，内建的信息中存在name，则一并显示。</span><br><span class="line">-f：排除对shell函数的查找。</span><br><span class="line">-p：如果name在执行&#x27;type -t name&#x27;返回的不是&#x27;file&#x27;，那么什么也不返回；否则会在环境变量PATH中查找并返回可执行文件路径。</span><br><span class="line">-P：即使要查找的name是别名、内建、函数中的一个，仍然会在环境变量PATH中查找并返回可执行文件路径。</span><br><span class="line">-t：根据name的类型返回一个单词（别名，关键字，函数，内建，文件），否则返回空值。</span><br></pre></td></tr></table></figure>
-
-<h2 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h2><p>当指定的命令可以找到时返回成功，如果有没找到的返回失败。</p>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>接下来要用到的例子假设’~&#x2F;.bashrc’文件定义了以下的内容：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">alias ls=&#x27;ls --color=auto&#x27;</span><br><span class="line">mybash()&#123; vim ~/.bashrc; &#125;</span><br></pre></td></tr></table></figure>
-<p>而且执行环境里没有使用enable禁用内建命令。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">mybash is a function</span><br><span class="line">mybash ()</span><br><span class="line">&#123;</span><br><span class="line">    vim ~/.bashrc</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a -f mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出（因为排除了函数，所以报错）</span></span><br><span class="line">bash: type: mybash: not found</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a -p mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出为空（因为排除了函数，所以什么也不返回）</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a <span class="built_in">ls</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">ls is aliased to `ls --color=suto&#x27;</span><br><span class="line">ls is /usr/bin/ls</span><br><span class="line">ls is /bin/ls</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -a -p <span class="built_in">ls</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">/usr/bin/ls</span><br><span class="line">/bin/ls</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">&#x27;-f&#x27;</span>不会影响<span class="string">&#x27;-P&#x27;</span>的范围，<span class="string">&#x27;-f&#x27;</span>不建议和<span class="string">&#x27;-p&#x27;</span>使用。</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">注意：<span class="built_in">printf</span>同时是内建命令以及可执行文件（GNU coreutils），优先作为内建处理。</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -p <span class="built_in">printf</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出为空</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -P <span class="built_in">printf</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">/usr/bin/printf</span><br><span class="line">/bin/printf</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果有多个类型，那么输出优先级最高的类型。</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t <span class="built_in">ls</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">alias</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t <span class="keyword">for</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出（bash关键字）</span></span><br><span class="line">keyword</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">function</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t -f mybash</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出空值</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t <span class="built_in">printf</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出（bash内建优先级高）</span></span><br><span class="line">builtin</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash"><span class="built_in">type</span> -t <span class="built_in">chmod</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出</span></span><br><span class="line">file</span><br></pre></td></tr></table></figure>
-
-<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><ol>
-<li>该命令是bash内建命令，相关的帮助信息请查看<code>help</code>命令。</li>
-<li>命令优先级问题请查看<code>builtin</code>命令。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>find查找文件</title>
-    <url>/posts/89021aa2/</url>
-    <content><![CDATA[<h1 id="find"><a href="#find" class="headerlink" title="find"></a>find</h1><p>用来在指定目录下查找文件。任何位于参数之前的字符串都将被视为欲查找的目录名。如果使用该命令时，不设置任何参数，则find命令将在当前目录下查找子目录与文件。并且将查找到的子目录和文件全部进行显示。</p>
-<span id="more"></span>
-<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find(选项)(参数)</span><br><span class="line"></span><br><span class="line">比较常用的参数:</span><br><span class="line">-prune：不寻找字符串作为寻找文件或目录的范本样式;</span><br><span class="line">-maxdepth&lt;目录层级&gt;：设置最大目录层级；</span><br><span class="line">-mindepth&lt;目录层级&gt;：设置最小目录层级；</span><br><span class="line">-path&lt;范本样式&gt;：指定字符串作为寻找目录的范本样式；</span><br><span class="line">-regex&lt;范本样式&gt;：指定字符串作为寻找文件或目录的范本样式；</span><br><span class="line">-size&lt;文件大小&gt;：查找符合指定的文件大小的文件；</span><br><span class="line">-name&lt;范本样式&gt;：指定字符串作为寻找文件或目录的范本样式</span><br><span class="line">-depth：从指定目录下最深层的子目录开始查找；</span><br><span class="line">-empty：寻找文件大小为0 Byte的文件，或目录下没有任何子目录或文件的空目录；</span><br><span class="line">-exec&lt;执行指令&gt;：假设find指令的回传值为True，就执行该指令；</span><br></pre></td></tr></table></figure>
-
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h3 id="基于名字查找-name"><a href="#基于名字查找-name" class="headerlink" title="基于名字查找-name"></a>基于名字查找-name</h3><p>在<code>/home</code>目录下查找以.txt结尾的文件名</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /home -name &quot;*.txt&quot;</span><br></pre></td></tr></table></figure>
-
-<p>在当前目录及子目录下查找所有以.txt和.pdf结尾的文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . \( -name &quot;*.txt&quot; -o -name &quot;*.pdf&quot; \)</span><br><span class="line"></span><br><span class="line">或</span><br><span class="line"></span><br><span class="line">find . -name &quot;*.txt&quot; -o -name &quot;*.pdf&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="基于路径查找-path"><a href="#基于路径查找-path" class="headerlink" title="基于路径查找-path"></a>基于路径查找-path</h3><p>匹配文件路径或者文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /usr/ -path &quot;*local*&quot;</span><br></pre></td></tr></table></figure>
-<p>查找路径下所有example&#x2F;pubspec.yaml的文件,可以看到-path是支持Ant风格路径</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">find . -path &quot;**/example/pubspec.yaml&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="否定参数"><a href="#否定参数" class="headerlink" title="否定参数"></a>否定参数</h3><p>找出&#x2F;home下不是以.txt结尾的文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find /home ! -name &quot;*.txt&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="基于正则表达式匹配文件路径"><a href="#基于正则表达式匹配文件路径" class="headerlink" title="基于正则表达式匹配文件路径"></a>基于正则表达式匹配文件路径</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -regex &quot;.*\(\.txt\|\.pdf\)$&quot;</span><br></pre></td></tr></table></figure>
-
-<p>同上，但忽略大小写</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -iregex &quot;.*\(\.txt\|\.pdf\)$&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="基于目录深度搜索"><a href="#基于目录深度搜索" class="headerlink" title="基于目录深度搜索"></a>基于目录深度搜索</h3><p>向下最大深度限制为3</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -maxdepth 3 -type f</span><br></pre></td></tr></table></figure>
-
-<p>搜索出深度距离当前目录至少2个子目录的所有文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -mindepth 2 -type f</span><br></pre></td></tr></table></figure>
-
-<h3 id="根据文件大小进行匹配"><a href="#根据文件大小进行匹配" class="headerlink" title="根据文件大小进行匹配"></a>根据文件大小进行匹配</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -size 文件大小单元</span><br></pre></td></tr></table></figure>
-
-<p>文件大小单元：</p>
-<ul>
-<li><strong>b</strong>  —— 块（512字节）</li>
-<li><strong>c</strong>  —— 字节</li>
-<li><strong>w</strong>  —— 字（2字节）</li>
-<li><strong>k</strong>  —— 千字节</li>
-<li><strong>M</strong>  —— 兆字节</li>
-<li><strong>G</strong>  —— 吉字节</li>
-</ul>
-<p>搜索大于10KB的文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -size +10k</span><br></pre></td></tr></table></figure>
-
-<p>搜索小于10KB的文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -size -10k</span><br></pre></td></tr></table></figure>
-
-<p>搜索等于10KB的文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -size 10k</span><br></pre></td></tr></table></figure>
-
-<h3 id="删除匹配文件"><a href="#删除匹配文件" class="headerlink" title="删除匹配文件"></a>删除匹配文件</h3><p>删除当前目录下所有.txt文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -name &quot;*.txt&quot; -delete</span><br></pre></td></tr></table></figure>
-
-<h3 id="借助-exec选项与其他命令结合使用"><a href="#借助-exec选项与其他命令结合使用" class="headerlink" title="借助-exec选项与其他命令结合使用"></a>借助<code>-exec</code>选项与其他命令结合使用</h3><p>找出当前目录下所有root的文件，并把所有权更改为用户tom</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -user root -exec chown tom &#123;&#125; \;</span><br></pre></td></tr></table></figure>
-
-<p>上例中， <strong>{}</strong>  用于与 <strong>-exec</strong> 选项结合使用来匹配所有文件，然后会被替换为相应的文件名。</p>
-<p>找出自己家目录下所有的.txt文件并删除</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find $HOME/. -name &quot;*.txt&quot; -ok rm &#123;&#125; \;</span><br></pre></td></tr></table></figure>
-
-<p>上例中， <strong>-ok</strong> 和 <strong>-exec</strong> 行为一样，不过它会给出提示，是否执行相应的操作。</p>
-<p>查找当前目录下所有.txt文件并把他们拼接起来写入到all.txt文件中</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -name &quot;*.txt&quot; -exec cat &#123;&#125; \;&gt; /all.txt</span><br></pre></td></tr></table></figure>
-
-<p>将30天前的.log文件移动到old目录中</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -mtime +30 -name &quot;*.log&quot; -exec cp &#123;&#125; old \;</span><br></pre></td></tr></table></figure>
-
-<p>找出当前目录下所有.txt文件并以“File:文件名”的形式打印出来</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -type f -name &quot;*.txt&quot; -exec printf &quot;File: %s\n&quot; &#123;&#125; \;</span><br></pre></td></tr></table></figure>
-
-<p>因为单行命令中-exec参数中无法使用多个命令，以下方法可以实现在-exec之后接受多条命令</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">-exec ./text.sh &#123;&#125; \;</span><br></pre></td></tr></table></figure>
-
-<h3 id="搜索但跳过指定的目录"><a href="#搜索但跳过指定的目录" class="headerlink" title="搜索但跳过指定的目录"></a>搜索但跳过指定的目录</h3><p>查找当前目录或者子目录下所有.txt文件，但是跳过子目录sk</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -path &quot;./sk&quot; -prune -o -name &quot;*.txt&quot; -print</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>:warning: .&#x2F;sk 不能写成 .&#x2F;sk&#x2F; ，否则没有作用。</p>
-</blockquote>
-<p>忽略两个目录</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . \( -path ./sk -o  -path ./st \) -prune -o -name &quot;*.txt&quot; -print</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>:warning: 如果写相对路径必须加上<code>./</code></p>
-</blockquote>
-<h3 id="find其他技巧收集"><a href="#find其他技巧收集" class="headerlink" title="find其他技巧收集"></a>find其他技巧收集</h3><p>要列出所有长度为零的文件</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">find . -empty</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>正则表达式</title>
-    <url>/posts/2f57a694/</url>
-    <content><![CDATA[<h1 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h1><h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><p>正则表达式分为两类</p>
-<ul>
-<li>基本正则表达式 BRE</li>
-<li>扩展正则表达式 ERE</li>
-</ul>
-<span id="more"></span>
-<h2 id="基本正则表达式"><a href="#基本正则表达式" class="headerlink" title="基本正则表达式"></a>基本正则表达式</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">^         用于模式最左侧，如&quot;^boy&quot;,匹配以boy单词开头的行</span><br><span class="line">$         用于模式最左侧，如&quot;boy$&quot;,匹配以boy单词结尾的行</span><br><span class="line">^$        匹配空行</span><br><span class="line">\         转义，让特殊含义的字符显示原意</span><br><span class="line">*         匹配前一个字符连续出现0或1次以上</span><br><span class="line">.*        匹配所有内容</span><br><span class="line">^.*       匹配任意多个字符开头的内容</span><br><span class="line">.*$       匹配任意多个字符结尾的内容</span><br><span class="line">[abc]     匹配[]的任意一个字符，a或b或c</span><br><span class="line">[^abc]    与上面相反，非a非b非c的任意字符</span><br><span class="line">\&lt;        如:&#x27;\&lt;grep&#x27;匹配包含以grep开头的单词的行</span><br><span class="line">\&gt;        如:&#x27;grep\&gt;&#x27;匹配包含以grep结尾的单词的行</span><br></pre></td></tr></table></figure>
-
-<h2 id="扩展正则表达式"><a href="#扩展正则表达式" class="headerlink" title="扩展正则表达式"></a>扩展正则表达式</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">+         匹配前一个字符 1次或多次</span><br><span class="line">[]+       匹配括号内的字符 1次或多次</span><br><span class="line">?         匹配前一个字符 0次或1次 </span><br><span class="line">|         同时过滤多个字符串</span><br><span class="line">()        被括起来的作为整体</span><br><span class="line">a&#123;n,m&#125;    匹配前一字符，最少n次，最多m次</span><br><span class="line">a&#123;n,&#125;     匹配前一字符，最少n次</span><br><span class="line">a&#123;n&#125;      匹配前一字符正好n次</span><br><span class="line">a&#123;,m&#125;     匹配前一字符，最多m次</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-  </entry>
-  <entry>
     <title>三剑客grep,sed和awk</title>
     <url>/posts/e2f332a0/</url>
     <content><![CDATA[<h1 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h1><p>能使用正则表达式搜索文本，并把匹配的行打印出来。用于过滤&#x2F;搜索的特定字符</p>
@@ -1263,5 +1161,107 @@
 <p>以上方法中，变量之间用空格分隔作为awk的命令行参数跟随在BEGIN、{}和END语句块之后。</p>
 <h2 id="查找进程pid"><a href="#查找进程pid" class="headerlink" title="查找进程pid"></a>查找进程pid</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">netstat -antup | grep 7770 | awk &#x27;&#123; print $NF NR&#125;&#x27; | awk &#x27;&#123; print $1&#125;&#x27;</span><br></pre></td></tr></table></figure>
 ]]></content>
+  </entry>
+  <entry>
+    <title>用tee命令重定向标准输出</title>
+    <url>/posts/aee075e4/</url>
+    <content><![CDATA[<h1 id="tee"><a href="#tee" class="headerlink" title="tee"></a>tee</h1><p>从标准输入读取数据并重定向到标准输出和文件。主要用于，需要同时查看数据内容并输出到文件时使用。</p>
+<span id="more"></span>
+
+<h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">tee [OPTION]... [FILE]...</span><br><span class="line"></span><br><span class="line">FILE（可选）：要输出的文件，可以为一或多个。</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">长选项与短选项等价</span><br><span class="line"></span><br><span class="line">-a, --append               追加到文件中而不是覆盖。</span><br><span class="line">-i, --ignore-interrupts    忽略中断信号（Ctrl+c中断操作无效）。</span><br><span class="line">-p                         诊断写入非管道的错误。</span><br><span class="line">--output-error[=MODE]      设置写错误时的行为，请查看下方的MODE部分。</span><br><span class="line">--help                     显示帮助信息并退出。</span><br><span class="line">--version                  显示版本信息并退出。</span><br><span class="line"></span><br><span class="line">MODE决定了当出现写错误时的输出行为，可用的MODE如下：</span><br><span class="line"></span><br><span class="line">&#x27;warn&#x27;           当写入到任何输出报错时诊断。</span><br><span class="line">&#x27;warn-nopipe&#x27;    当写入到任何输出（而不是管道）报错时诊断。</span><br><span class="line">&#x27;exit&#x27;           当写入到任何输出报错时退出。</span><br><span class="line">&#x27;exit-nopipe&#x27;    当写入到任何输出（而不是管道）报错时退出。</span><br><span class="line"></span><br><span class="line">-p选项的指定的默认MODE为&#x27;warn-nopipe&#x27;。</span><br><span class="line">当&#x27;--output-error&#x27;没有在选项中时，默认的操作是当写入到管道报错时立刻退出，诊断错误信息并写入到非管道输出。</span><br></pre></td></tr></table></figure>
+
+<h2 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h2><p>返回状态为成功除非给出了非法选项或非法参数。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将进程信息通过管道输出到标准输出（终端）并覆盖写入到文件中。</span></span><br><span class="line">ps -ef |tee info_a.log info_b.log</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将进程信息通过管道输出到标准输出（终端）并追加写入到文件中。</span></span><br><span class="line">ps -ef |tee -a info_a.log info_b.log</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>用cut命令来切割字符串</title>
+    <url>/posts/9b60227b/</url>
+    <content><![CDATA[<h1 id="Cut"><a href="#Cut" class="headerlink" title="Cut"></a>Cut</h1><h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cut（选项）（参数）</span><br><span class="line"></span><br><span class="line">-b：仅显示行中指定直接范围的内容；</span><br><span class="line">-c：仅显示行中指定范围的字符；</span><br><span class="line">-d：指定字段的分隔符，默认的字段分隔符为“TAB”；</span><br><span class="line">-f：显示指定字段的内容；</span><br><span class="line">-n：与“-b”选项连用，不分割多字节字符；</span><br><span class="line">--complement：补足被选择的字节、字符或字段；</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p>例如有一个学生报表信息，包含 No、Name、Mark、Percent：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cat test.txt</span><br><span class="line">No Name Mark Percent</span><br><span class="line">01 tom 69 91</span><br><span class="line">02 jack 71 87</span><br><span class="line">03 alex 68 98</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>使用  <strong>-f</strong>  选项提取指定字段（这里的 f 参数可以简单记忆为 <code>--fields</code>的缩写）：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -f 1 test.txt</span><br><span class="line">No</span><br><span class="line">01</span><br><span class="line">02</span><br><span class="line">03</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -f2,3 test.txt</span><br><span class="line">Name Mark</span><br><span class="line">tom 69</span><br><span class="line">jack 71</span><br><span class="line">alex 68</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p> <strong>–complement</strong>  选项提取指定字段之外的列（打印除了第二列之外的列）：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -f2 --complement test.txt</span><br><span class="line">No Mark Percent</span><br><span class="line">01 69 91</span><br><span class="line">02 71 87</span><br><span class="line">03 68 98</span><br></pre></td></tr></table></figure>
+
+<p>使用  <strong>-d</strong>  选项指定字段分隔符：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cat test2.txt</span><br><span class="line">No;Name;Mark;Percent</span><br><span class="line">01;tom;69;91</span><br><span class="line">02;jack;71;87</span><br><span class="line">03;alex;68;98</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -f2 -d&quot;;&quot; test2.txt</span><br><span class="line">Name</span><br><span class="line">tom</span><br><span class="line">jack</span><br><span class="line">alex</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="指定字段的字符或者字节范围"><a href="#指定字段的字符或者字节范围" class="headerlink" title="指定字段的字符或者字节范围"></a>指定字段的字符或者字节范围</h3><p>cut 命令可以将一串字符作为列来显示，字符字段的记法：</p>
+<ul>
+<li><strong>N-</strong> ：从第 N 个字节、字符、字段到结尾；</li>
+<li><strong>N-M</strong> ：从第 N 个字节、字符、字段到第 M 个（包括 M 在内）字节、字符、字段；</li>
+<li><strong>-M</strong> ：从第 1 个字节、字符、字段到第 M 个（包括 M 在内）字节、字符、字段。</li>
+</ul>
+<p>上面是记法，结合下面选项将摸个范围的字节、字符指定为字段：</p>
+<ul>
+<li><strong>-b</strong>  表示字节；</li>
+<li><strong>-c</strong>  表示字符；</li>
+<li><strong>-f</strong>  表示定义字段。</li>
+</ul>
+<p><strong>示例</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cat test.txt</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line">abcdefghijklmnopqrstuvwxyz</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>打印第 1 个到第 3 个字符：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -c1-3 test.txt</span><br><span class="line">abc</span><br><span class="line">abc</span><br><span class="line">abc</span><br><span class="line">abc</span><br><span class="line">abc</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>打印前 2 个字符：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -c-2 test.txt</span><br><span class="line">ab</span><br><span class="line">ab</span><br><span class="line">ab</span><br><span class="line">ab</span><br><span class="line">ab</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>打印从第 5 个字符开始到结尾：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cut -c5- test.txt</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br><span class="line">efghijklmnopqrstuvwxyz</span><br></pre></td></tr></table></figure>
+
+<p>打印最后5个字符: </p>
+<p>遗憾的是, <code>cut</code>并没有提供最后字符的支持. 不过我们可以通过字符串反转来实现. </p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost text]# cat test.txt| rev | cut -c -5 | rev</span><br><span class="line">vwxyz</span><br><span class="line">vwxyz</span><br><span class="line">vwxyz</span><br><span class="line">vwxyz</span><br><span class="line">vwxyz</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>用wc命令来统计字符数</title>
+    <url>/posts/270bc33d/</url>
+    <content><![CDATA[<h1 id="wc"><a href="#wc" class="headerlink" title="wc"></a>wc</h1><p>统计文件的字节数、字数、行数</p>
+<h2 id="补充说明"><a href="#补充说明" class="headerlink" title="补充说明"></a>补充说明</h2><p><strong>wc命令</strong> 统计指定文件中的字节数、字数、行数，并将统计结果显示输出。利用wc指令我们可以计算文件的Byte数、字数或是列数，若不指定文件名称，或是所给予的文件名为“-”，则wc指令会从标准输入设备读取数据。wc同时也给出所指定文件的总统计数。</p>
+<span id="more"></span>
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc(选项)(参数)</span><br><span class="line">wc [选项]... [文件]...</span><br><span class="line">wc [选项]... --files0-from=F</span><br></pre></td></tr></table></figure>
+
+<h3 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">-c # 统计字节数，或--bytes：显示Bytes数。</span><br><span class="line">-l # 统计行数，或--lines：显示列数。</span><br><span class="line">-m # 统计字符数，或--chars：显示字符数。</span><br><span class="line">-w # 统计字数，或--words：显示字数。一个字被定义为由空白、跳格或换行字符分隔的字符串。</span><br><span class="line">-L # 打印最长行的长度，或--max-line-length。</span><br><span class="line">-help     # 显示帮助信息。</span><br><span class="line">--version # 显示版本信息。</span><br></pre></td></tr></table></figure>
+
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><p>文件：需要统计的文件列表。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc -l *       # 统计当前目录下的所有文件行数及总计行数。</span><br><span class="line">wc -l *.js    # 统计当前目录下的所有 .js 后缀的文件行数及总计行数。</span><br><span class="line">find  . * | xargs wc -l # 当前目录以及子目录的所有文件行数及总计行数。</span><br></pre></td></tr></table></figure>
+
+<p>查看文件的字节数、字数、行数</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc test.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出结果</span></span><br><span class="line">7     8     70     test.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">行数 单词数 字节数 文件名</span></span><br></pre></td></tr></table></figure>
+
+<p>用wc命令怎么做到只打印统计数字不打印文件名</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc -l &lt; test.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出结果</span></span><br><span class="line">7</span><br></pre></td></tr></table></figure>
+
+<p>用来统计当前目录下的文件数(不包含隐藏文件)</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">要去除TOTAL行</span></span><br><span class="line">expr $(ls -l | wc -l) - 1</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出结果</span></span><br><span class="line">8</span><br></pre></td></tr></table></figure>
+
+<p>统计当前目录下的所有文件行数及总计行数</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@centos7 ~]# wc -l *</span><br><span class="line">      21 LICENSE</span><br><span class="line">     270 README.md</span><br><span class="line">wc: example: read: Is a directory</span><br><span class="line">     785 lerna-debug.log</span><br><span class="line">      25 lerna.json</span><br><span class="line">wc: node_modules: read: Is a directory</span><br><span class="line">   23603 package-lock.json</span><br><span class="line">      79 package.json</span><br><span class="line">       3 renovate.json</span><br><span class="line">   24786 total</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
   </entry>
 </search>
