@@ -1267,4 +1267,40 @@
         <category>linux</category>
       </categories>
   </entry>
+  <entry>
+    <title>curl命令进行网络请求</title>
+    <url>/posts/abc9965/</url>
+    <content><![CDATA[<p>curl命令 是一个利用URL规则在命令行下工作的文件传输工具。它支持文件的上传和下载，所以是综合传输工具，但按传统，习惯称curl为下载工具。作为一款强力工具，curl支持包括HTTP、HTTPS、ftp等众多协议，还支持POST、cookies、认证、从指定偏移处下载部分文件、用户代理字符串、限速、文件大小、进度条等特征。</p>
+<span id="more"></span>
+
+<h2 id="文件下载"><a href="#文件下载" class="headerlink" title="文件下载"></a>文件下载</h2><p>使用选项-O将下载的数据写入到文件，文件与远端服务器上的文件名保持一致</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -O http://example.com/text.iso</span><br></pre></td></tr></table></figure>
+<p>或者使用-o(等于–output，把输出写到该文件中)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -o filename.iso http://example.com/test.iso --progress</span><br><span class="line">######################################### 100.0%</span><br></pre></td></tr></table></figure>
+<h3 id="断点续传"><a href="#断点续传" class="headerlink" title="断点续传"></a>断点续传</h3><p>curl能够从特定的文件偏移处继续下载，它可以通过指定一个偏移量来下载部分文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl URL/File -C 偏移量</span><br><span class="line"></span><br><span class="line">#偏移量是以字节为单位的整数，如果让curl自动推断出正确的续传位置使用-C -：</span><br><span class="line">curl -C -URL</span><br></pre></td></tr></table></figure>
+
+<h2 id="设置请求头"><a href="#设置请求头" class="headerlink" title="设置请求头"></a>设置请求头</h2><p>-H 参数添加 HTTP 请求的标头</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -H &#x27;Accept-Language: en-US&#x27; https://example.com</span><br><span class="line"></span><br><span class="line">curl -H &#x27;Accept-Language: en-US&#x27; -H &#x27;Content-Type: application/json&#x27; https://example.com</span><br></pre></td></tr></table></figure>
+<h2 id="权限认证"><a href="#权限认证" class="headerlink" title="权限认证"></a>权限认证</h2><p>使用curl选项 -u 可以完成HTTP或者FTP的认证</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -u username:password http://example.com</span><br></pre></td></tr></table></figure>
+<p>也有将认证信息放在请求头里的,例如github的api</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -L -H &quot;Accept: application/vnd.github+json&quot; -H &quot;Authorization: Bearer &lt;YOUR-TOKEN&gt;&quot; https://api.github.com/repos/OWNER/REPO/pulls</span><br></pre></td></tr></table></figure>
+
+<h2 id="Get请求"><a href="#Get请求" class="headerlink" title="Get请求"></a>Get请求</h2><p>使用curl命令时，它默认使用GET方法进行HTTP请求</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl &quot;http://www.example.com&quot;    # 如果这里的URL指向的是一个文件或者一幅图都可以直接下载到本地</span><br><span class="line">curl -i &quot;http://www.example.com&quot; # 显示全部信息</span><br><span class="line">curl -l &quot;http://www.example.com&quot; # 显示页面内容</span><br><span class="line">curl -v &quot;http://www.example.com&quot; # 显示get请求全过程解析</span><br></pre></td></tr></table></figure>
+
+<h2 id="Post请求"><a href="#Post请求" class="headerlink" title="Post请求"></a>Post请求</h2><p>但是如果是Post请求时，使用-X</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$ curl -d &quot;param1=value1&amp;param2=value2&quot; &quot;http://www.example.com/login&quot;</span><br><span class="line"></span><br><span class="line">$ curl -d&#x27;login=emma＆password=123&#x27; -X POST https://example.com/login</span><br><span class="line"># 或者</span><br><span class="line">$ curl -d &#x27;login=emma&#x27; -d &#x27;password=123&#x27; -X POST  https://example.com/login</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>添加-d 发送 POST 请求的数据体</p>
+<p>发送Json格式的Post请求</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -l -H &quot;Content-type: application/json&quot; -X POST -d &#x27;&#123;&quot;phone&quot;:&quot;13888888888&quot;,&quot;password&quot;:&quot;test&quot;&#125;&#x27; http://example.com/apis/users.json</span><br></pre></td></tr></table></figure>
+
+<h2 id="上传文件"><a href="#上传文件" class="headerlink" title="上传文件"></a>上传文件</h2><p>使用-T 指定要上传的文件名,同时发送PUT请求</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">curl -u name:password -X PUT url -T ./test.txt</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+  </entry>
 </search>
