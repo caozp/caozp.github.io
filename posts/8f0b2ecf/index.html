@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="gradle插件所有有用的功能，例如以能够编译 Java 代码为例，都是通过插件进行添加的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gradle插件">
+<meta property="og:url" content="http://example.com/posts/8f0b2ecf/index.html">
+<meta property="og:site_name" content="Welcome">
+<meta property="og:description" content="gradle插件所有有用的功能，例如以能够编译 Java 代码为例，都是通过插件进行添加的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-04-23T09:07:02.000Z">
+<meta property="article:modified_time" content="2024-04-23T09:09:01.916Z">
+<meta property="article:author" content="Magic">
+<meta property="article:tag" content="gradle">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/posts/8f0b2ecf/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>gradle插件 | Welcome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Welcome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/posts/8f0b2ecf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Magic">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Welcome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          gradle插件
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-04-23 17:07:02 / 修改时间：17:09:01" itemprop="dateCreated datePublished" datetime="2024-04-23T17:07:02+08:00">2024-04-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="gradle插件"><a href="#gradle插件" class="headerlink" title="gradle插件"></a>gradle插件</h1><p>所有有用的功能，例如以能够编译 Java 代码为例，都是通过插件进行添加的。</p>
+<span id="more"></span>
+<h2 id="应用二进制插件"><a href="#应用二进制插件" class="headerlink" title="应用二进制插件"></a>应用二进制插件</h2><p>什么是二进制插件呢？二进制插件就是实现了org.gradle.api.Plugin接口的插件，他们可以有plugin id，下面我们看下如何应用一个java插件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin:&#x27;java&#x27;</span><br></pre></td></tr></table></figure>
+<p>这样我们把java插件应用到我们的项目中了，其中’java’是Java插件的plugin id，他是唯一的，对于Gradle自带的核心插件都有一个容易记的短名称作为其plugin id，比如这里的java，其实它对应类型的是org.gradle.api.plugins.JavaPlugin，所以通过该类型我们也可以应用这个插件。</p>
+<p>又因为包org.gradle.api.plugins是默认导入的，所以我们可以去掉包名直接写为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &#x27;org.gradle.api.plugins.JavaPlugin&#x27;</span><br><span class="line">apply plugin: &#x27;JavaPlugin&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>以前三种写法是等价的</p>
+<h2 id="应用脚本插件"><a href="#应用脚本插件" class="headerlink" title="应用脚本插件"></a>应用脚本插件</h2><p>应用脚本插件，其实就是把这个脚本加载进来，和二进制 插件不同的是它使用的是from关键字，后面紧跟的是一个脚本文件，可以是本地的，也可以是网络的，如果是网络上的话要使用HTTP URL。</p>
+<p>虽然它不是一个真正的插件，但是不能忽视它的作用，它是脚本文件模块化的基础，我们可以把庞大的脚本文件，进行分块、分段整理，拆分成一个个共用、职责分明的文件，然后使用apply from来引用他们，比如我们可以把常用的函数放在一个utils.gradle脚本里，供其他脚本文件引用。</p>
+<p>我们把App的版本名称和版本号单独放在一个脚本文件里，这样我们每次只需要在这个文件修改App的版本名称和版本号即可，清晰、简单、方便、快捷，也可以使用自动化对该文件自动处理生成版本等等。</p>
+<h2 id="应用第三方插件"><a href="#应用第三方插件" class="headerlink" title="应用第三方插件"></a>应用第三方插件</h2><p>第三方发布的作为jar的二进制插件，我们在应用的时候，必须要现在buildscript{}里配置其classpath才能使用，这个不像Gradle为我们提供的内置插件。比如我们的Android Gradle插件，就属于Android发布的第三方插件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: &#x27;com.android.application&#x27;</span><br></pre></td></tr></table></figure>
+
+<h2 id="插件作用"><a href="#插件作用" class="headerlink" title="插件作用"></a>插件作用</h2><p>插件为我们的gradle添加了新的任务，配置了一些构建需要的属性。比如，Java 插件已经向项目添加了 compileJava 任务和 processResources 任务，并且配置了这两个任务的 destinationDir 属性</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">println relativePath(compileJava.destinationDir)</span><br><span class="line">println relativePath(processResources.destinationDir)</span><br></pre></td></tr></table></figure>
+
+<h1 id="自定义gradle插件"><a href="#自定义gradle插件" class="headerlink" title="自定义gradle插件"></a>自定义gradle插件</h1><p>对于一些复杂的构建功能，我们需要通过自定义gradle插件来扩展</p>
+<h2 id="buildSrc"><a href="#buildSrc" class="headerlink" title="buildSrc"></a>buildSrc</h2><p>在 Gradle 中，buildSrc是一个特殊的目录，用于存放构建脚本的代码，它不需要在setting.gradle中include进来，也会被识别。</p>
+<p>buildSrc目录下的代码可以被构建脚本直接引用。</p>
+<p>buildSrc目录下的代码会在构建脚本之前编译和执行。所以他不会读到gradle.properties中定义的全局变量。</p>
+<p>我们在buildSrc&#x2F;src&#x2F;main&#x2F;groovy中创建HelloPlugin.groovy文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import org.gradle.api.Plugin;</span><br><span class="line">import org.gradle.api.Project;</span><br><span class="line">import org.gradle.api.Task;</span><br><span class="line">import org.gradle.api.Action;</span><br><span class="line"></span><br><span class="line">public class HelloPlugin implements Plugin&lt;Project&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void apply(Project project) &#123;</span><br><span class="line">        println(&quot;this is HelloPlugin&quot;);</span><br><span class="line">        project.getTasks().create(&quot;HelloTask&quot;, new Action&lt;Task&gt;() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void execute(Task task) &#123;</span><br><span class="line">                println(&quot;this is HelloPluginTask&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上代码，我们就创建了一个HelloTask。</p>
+<p>然后在app&#x2F;build.gradle中引用该插件<code>apply plugin: HelloPlugin</code>,然后我们执行<code>./gradlew tasks --all</code>。结果如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-&gt; % ./gradlew tasks --all</span><br><span class="line">初始化阶段开始...</span><br><span class="line">settingsEvaluated</span><br><span class="line">projectsLoaded</span><br><span class="line"></span><br><span class="line">&gt; Configure project :app</span><br><span class="line">子项目beforeEvaluate回调...</span><br><span class="line">this is HelloPlugin</span><br><span class="line">this is HelloPluginTask</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h2 id="第三方插件"><a href="#第三方插件" class="headerlink" title="第三方插件"></a>第三方插件</h2><p>仿照buildSrc目录的build.gradle，我们也需要增加groovy-gradle-plugin插件，这样我们就可以对groovy代码进行构建</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">    id &#x27;groovy-gradle-plugin&#x27;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">repositories &#123;</span><br><span class="line">    gradlePluginPortal()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而gradlePluginPortal 是一个在线的 Gradle 插件仓库，它提供了大量的 Gradle 插件供开发者使用。在 Gradle 5.0 及以上版本中，gradlePluginPortal 被默认添加到了 Gradle 的插件仓库列表中。</p>
+<p>使用 gradlePluginPortal 可以方便地查找和引用第三方 Gradle 插件。当你在 Gradle 构建文件中声明一个插件时，Gradle 会自动从 gradlePluginPortal 中下载该插件的相关信息和依赖项，并在构建过程中使用该插件</p>
+<p>完成插件代码后。还需要指明插件入口。<br>在src&#x2F;main&#x2F;目录下创建resources&#x2F;META-INF&#x2F;gradle-plugins&#x2F;xxxx.properties<br>其中xxxx将是apply plugin: xxxx的名称。</p>
+<p>而properties的具体内容是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation-class=插件的全类名</span><br></pre></td></tr></table></figure>
+
+<p>例如：android gradle 插件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">com.android.application.properties:</span><br><span class="line"></span><br><span class="line">implementation-class=com.android.build.gradle.AppPlugin</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/gradle/" rel="tag"><i class="fa fa-tag"></i> gradle</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/posts/af8dbea2/" rel="prev" title="gradle构建">
+      <i class="fa fa-chevron-left"></i> gradle构建
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/posts/866be044/" rel="next" title="java与jvm">
+      java与jvm <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#gradle%E6%8F%92%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">gradle插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%8F%92%E4%BB%B6"><span class="nav-number">1.1.</span> <span class="nav-text">应用二进制插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E8%84%9A%E6%9C%AC%E6%8F%92%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">应用脚本插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6"><span class="nav-number">1.3.</span> <span class="nav-text">应用第三方插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E4%BB%B6%E4%BD%9C%E7%94%A8"><span class="nav-number">1.4.</span> <span class="nav-text">插件作用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89gradle%E6%8F%92%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">自定义gradle插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#buildSrc"><span class="nav-number">2.1.</span> <span class="nav-text">buildSrc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8F%92%E4%BB%B6"><span class="nav-number">2.2.</span> <span class="nav-text">第三方插件</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Magic</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Magic</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true}});</script></body>
+</html>

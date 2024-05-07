@@ -20,20 +20,23 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="jenkins提供了Rest api接口给我们调用，方便我们来管理jenkins服务器。">
+  <meta name="description" content="JDK,JRE,JVM是什么Java是一门编程语言。而JDK是Java开发工具包,是整个 Java 开发的核心。它提供了 Java 的开发环境，JAVA API类库(都在lib目录下打包成了jar)，以及一些好用的小工具(有javac.exe,javap.exe，可以在java&#x2F;jdk&#x2F;bin&#x2F;目录下查看)和 Java的运行环境 而其中运行时环境就是我们说的JRE。JRE主要包含两个部分，jvm">
 <meta property="og:type" content="article">
-<meta property="og:title" content="用Jenkins接口动态修改job的配置">
-<meta property="og:url" content="http://example.com/posts/8a116419/index.html">
+<meta property="og:title" content="java与jvm">
+<meta property="og:url" content="http://example.com/posts/866be044/index.html">
 <meta property="og:site_name" content="Welcome">
-<meta property="og:description" content="jenkins提供了Rest api接口给我们调用，方便我们来管理jenkins服务器。">
+<meta property="og:description" content="JDK,JRE,JVM是什么Java是一门编程语言。而JDK是Java开发工具包,是整个 Java 开发的核心。它提供了 Java 的开发环境，JAVA API类库(都在lib目录下打包成了jar)，以及一些好用的小工具(有javac.exe,javap.exe，可以在java&#x2F;jdk&#x2F;bin&#x2F;目录下查看)和 Java的运行环境 而其中运行时环境就是我们说的JRE。JRE主要包含两个部分，jvm">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-04-19T07:34:43.000Z">
-<meta property="article:modified_time" content="2024-04-19T08:14:15.292Z">
+<meta property="og:image" content="http://example.com/images/jdk.PNG">
+<meta property="og:image" content="http://example.com/images/jvm.png">
+<meta property="article:published_time" content="2024-04-30T05:12:16.000Z">
+<meta property="article:modified_time" content="2024-04-30T06:07:38.838Z">
 <meta property="article:author" content="Magic">
-<meta property="article:tag" content="Jenkins">
+<meta property="article:tag" content="jvm">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/jdk.PNG">
 
-<link rel="canonical" href="http://example.com/posts/8a116419/">
+<link rel="canonical" href="http://example.com/posts/866be044/">
 
 
 <script id="page-configurations">
@@ -46,7 +49,7 @@
   };
 </script>
 
-  <title>用Jenkins接口动态修改job的配置 | Welcome</title>
+  <title>java与jvm | Welcome</title>
   
 
 
@@ -184,7 +187,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/posts/8a116419/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/posts/866be044/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -197,7 +200,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          用Jenkins接口动态修改job的配置
+          java与jvm
         </h1>
 
         <div class="post-meta">
@@ -208,7 +211,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-04-19 15:34:43 / 修改时间：16:14:15" itemprop="dateCreated datePublished" datetime="2024-04-19T15:34:43+08:00">2024-04-19</time>
+              <time title="创建时间：2024-04-30 13:12:16 / 修改时间：14:07:38" itemprop="dateCreated datePublished" datetime="2024-04-30T13:12:16+08:00">2024-04-30</time>
             </span>
 
           
@@ -222,37 +225,45 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>jenkins提供了Rest api接口给我们调用，方便我们来管理jenkins服务器。</p>
+        <h2 id="JDK-JRE-JVM是什么"><a href="#JDK-JRE-JVM是什么" class="headerlink" title="JDK,JRE,JVM是什么"></a>JDK,JRE,JVM是什么</h2><p>Java是一门编程语言。而JDK是Java开发工具包,是整个 Java 开发的核心。它提供了 Java 的开发环境，JAVA API类库(都在lib目录下打包成了jar)，以及一些好用的小工具(有<code>javac.exe</code>,<code>javap.exe</code>，可以在<code>java/jdk/bin/</code>目录下查看)和 Java的运行环境</p>
+<p>而其中运行时环境就是我们说的<strong>JRE</strong>。JRE主要包含两个部分，<strong>jvm 的标准实现和 Java 的一些基本类库</strong>。</p>
+<p><strong>JVM</strong>——我们耳熟能详的 Java 虚拟机。它只认识 xxx.class 这种类型的文件，它能够将 class 文件中的字节码指令进行识别并调用操作系统向上的 API 完成动作。所以说，jvm 是 Java 能够跨平台的核心。</p>
 <span id="more"></span>
 
-<h2 id="权限"><a href="#权限" class="headerlink" title="权限"></a>权限</h2><p>首先，需要申请一个有权限的token。这个需要在个人主页中可以创建一个API Token。</p>
-<h2 id="Python-Jenkins"><a href="#Python-Jenkins" class="headerlink" title="Python Jenkins"></a>Python Jenkins</h2><p>这是一个对jenkins Rest API接口的包装。具体官网可以看<a target="_blank" rel="noopener" href="https://python-jenkins.readthedocs.io/en/latest/">Python-jenkins</a></p>
-<p>我们就使用这个python库来完成对jenkins job默认配置的修改</p>
-<h3 id="创建jenkins服务"><a href="#创建jenkins服务" class="headerlink" title="创建jenkins服务"></a>创建jenkins服务</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">server=jenkins.Jenkins(jenkins_url,username=&#x27;username&#x27;,password=&quot;token&quot;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="获取一个job的默认配置信息"><a href="#获取一个job的默认配置信息" class="headerlink" title="获取一个job的默认配置信息"></a>获取一个job的默认配置信息</h3><p>他会返回我们一个xml格式的字符串。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">job_config_xml = server.get_job_config(My_JOB)</span><br></pre></td></tr></table></figure>
-<p>我们可以来修改这个字符串，完成对这个job配置的修改。</p>
-<h3 id="修改xml配置"><a href="#修改xml配置" class="headerlink" title="修改xml配置"></a>修改xml配置</h3><p>因为是xml字符串，我们需要使用的<a target="_blank" rel="noopener" href="https://docs.python.org/3/library/xml.etree.elementtree.html">ElementTree</a>这个工具来解析这个字符串</p>
+<p><img src="/images/jdk.PNG" alt="jdk"></p>
+<h2 id="什么是虚拟机"><a href="#什么是虚拟机" class="headerlink" title="什么是虚拟机"></a>什么是虚拟机</h2><p>所谓虚拟机（Virtual Machine），就是一台虚拟的计算机。它是一款软件，用来执行一系列虚拟计算机指令。大体上，虚拟机可以分为系统虚拟机和程序虚拟机。</p>
+<ul>
+<li>大名鼎鼎的Virtual Box，VMware就属于系统虚拟机，它们完全是对物理计算机硬件的仿真(模拟)，提供了一个可运行完整操作系统的软件平台</li>
+<li>程序虚拟机的典型代表就是Java虚拟机，它专门为执行单个计算机程序而设计，在Java虚拟机中执行的指令我们称为Java字节码指令。</li>
+</ul>
+<p>无论是系统虚拟机还是程序虚拟机，在上面运行的软件都被限制于虚拟机提供的资源中。</p>
+<h2 id="Java虚拟机"><a href="#Java虚拟机" class="headerlink" title="Java虚拟机"></a>Java虚拟机</h2><p>Java虚拟机是一台执行Java字节码的虚拟计算机，运行在操作系统之上的，它与硬件没有直接的交互。</p>
+<p>它拥有独立的运行机制，优秀的垃圾回器，以及可靠的即时编译器。</p>
+<p>它将负责装载字节码到其内部，解释&#x2F;编译为对应平台上的机器指令执行。每一条Java指令，Java虚拟机规范中都有详细定义，如怎么取操作数，怎么处理操作数，处理结果放在哪里。</p>
+<p>它的整体结构如下:</p>
+<p><img src="/images/jvm.png" alt="jvm结构"></p>
+<h2 id="基于栈的指令集架构"><a href="#基于栈的指令集架构" class="headerlink" title="基于栈的指令集架构"></a>基于栈的指令集架构</h2><p>Java编译器输入的指令流基本上是一种基于栈的指令集架构，另外一种指令集架构则是基于寄存器的指令集架构。具体来说：这两种架构之间的区别：</p>
+<p>基于栈式架构的特点：</p>
 <ol>
-<li><p>首先通过ET.fromstring，来生成一个包含所有标签的ElementTree对象</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import xml.etree.ElementTree as ET</span><br><span class="line">config_xml_root = ET.fromstring(job_config_xml)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>然后通过root.iter()去查找我们想要的标签。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">config_xml_root.iter(&#x27;hudson.model.StringParameterDefinition&#x27;)</span><br><span class="line">config_xml_root.iter(&#x27;hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition&#x27;)</span><br></pre></td></tr></table></figure>
-<p>比如，我们配置的StringParameter或者ValidatingStringParameter</p>
-</li>
-<li><p>最后我们去修改指定的默认配置。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for x in cut_branch_config_xml_root.iter(&#x27;hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition&#x27;):</span><br><span class="line">    item = x.find(&#x27;name&#x27;).text</span><br><span class="line">    if item == &quot;Version&quot;:</span><br><span class="line">       x.find(&#x27;defaultValue&#x27;).text=Version</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>最后把改好的ET对象转换成xml字符串</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">new_config_xml = ET.tostring(config_xml_root, encoding=&#x27;unicode&#x27;)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>重新配置jenkins job</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">server.reconfig_job(My_JOB,new_config_xml)</span><br></pre></td></tr></table></figure></li>
+<li>设计和实现更简单，适用于资源受限的系统；</li>
+<li>避开了寄存器的分配难题：使用零地址指令方式分配</li>
+<li>指令流中的指令大部分是零地址指令，其执行过程依赖于操作栈。指令集更小，编译器容易实现</li>
+<li>不需要硬件支持，可移植性更好，更好实现跨平台</li>
 </ol>
-<p>这样一个简单的动态修改jenkins job配置的功能就完成了。</p>
-
+<p>基于寄存器架构的特点：</p>
+<ol>
+<li>典型的应用是x86的二进制指令集：比如传统的PC以及Android的Davlik虚拟机。</li>
+<li>指令集架构则完全依赖硬件，与硬件的耦合度高，可移植性差</li>
+<li>性能优秀和执行更高效</li>
+<li>花费更少的指令去完成一项操作</li>
+<li>在大部分情况下，基于寄存器架构的指令集往往都以一地址指令、二地址指令和三地址指令为主，而基于栈式架构的指令集却是以零地址指令为主</li>
+</ol>
+<h3 id="两种架构的举例"><a href="#两种架构的举例" class="headerlink" title="两种架构的举例"></a>两种架构的举例</h3><p>同样执行2+3这种逻辑操作，其指令分别如下：</p>
+<p>基于栈的计算流程（以Java虚拟机为例):</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">iconst_2 //常量2入栈</span><br><span class="line">istore_1</span><br><span class="line">iconst_3 // 常量3入栈</span><br><span class="line">istore_2</span><br><span class="line">iload_1</span><br><span class="line">iload_2</span><br><span class="line">iadd //常量2/3出栈，执行相加</span><br><span class="line">istore_0 // 结果5入栈</span><br></pre></td></tr></table></figure>
+<p>8个指令，</p>
+<p>而基于寄存器的计算流程</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mov eax,2 //将eax寄存器的值设为1</span><br><span class="line">add eax,3 //使eax寄存器的值加3</span><br></pre></td></tr></table></figure>
     </div>
 
     
@@ -261,7 +272,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Jenkins/" rel="tag"><i class="fa fa-tag"></i> Jenkins</a>
+              <a href="/tags/jvm/" rel="tag"><i class="fa fa-tag"></i> jvm</a>
           </div>
 
         
@@ -270,13 +281,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/posts/abc9965/" rel="prev" title="curl命令进行网络请求">
-      <i class="fa fa-chevron-left"></i> curl命令进行网络请求
+    <a href="/posts/8f0b2ecf/" rel="prev" title="gradle插件">
+      <i class="fa fa-chevron-left"></i> gradle插件
     </a></div>
-      <div class="post-nav-item">
-    <a href="/posts/af8dbea2/" rel="next" title="gradle构建">
-      gradle构建 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -335,7 +343,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%83%E9%99%90"><span class="nav-number">1.</span> <span class="nav-text">权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python-Jenkins"><span class="nav-number">2.</span> <span class="nav-text">Python Jenkins</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAjenkins%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.1.</span> <span class="nav-text">创建jenkins服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E4%B8%80%E4%B8%AAjob%E7%9A%84%E9%BB%98%E8%AE%A4%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="nav-number">2.2.</span> <span class="nav-text">获取一个job的默认配置信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9xml%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">修改xml配置</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK-JRE-JVM%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">JDK,JRE,JVM是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="nav-number">2.</span> <span class="nav-text">什么是虚拟机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="nav-number">3.</span> <span class="nav-text">Java虚拟机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%A0%88%E7%9A%84%E6%8C%87%E4%BB%A4%E9%9B%86%E6%9E%B6%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">基于栈的指令集架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E6%9E%B6%E6%9E%84%E7%9A%84%E4%B8%BE%E4%BE%8B"><span class="nav-number">4.1.</span> <span class="nav-text">两种架构的举例</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
