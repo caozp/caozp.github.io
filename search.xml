@@ -1533,4 +1533,79 @@
         <tag>jvm</tag>
       </tags>
   </entry>
+  <entry>
+    <title>类加载子系统</title>
+    <url>/posts/13cb3a0e/</url>
+    <content><![CDATA[<h2 id="类加载子系统作用"><a href="#类加载子系统作用" class="headerlink" title="类加载子系统作用"></a>类加载子系统作用</h2><ol>
+<li>类加载子系统负责从文件系统或者网络中加载Class文件</li>
+<li>ClassLoader只负责class文件的加载，至于它是否可以运行，由执行引擎决定</li>
+<li>加载的类信息存放于一块称为方法区的内存空间。除了类的信息外，方法区中还会存放**运行时常量池信息(Constant pool)**，可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）</li>
+</ol>
+<span id="more"></span>
+
+<h2 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h2><p><img src="/images/loader.png" alt="loader"></p>
+<p>如果想要执行某个类的静态main方法。要经历 <strong>加载-》链接-》初始化-》调用</strong> 这些步骤</p>
+<h3 id="loading"><a href="#loading" class="headerlink" title="loading"></a>loading</h3><p>此处的加载是指loading</p>
+<ol>
+<li>通过一个类的全限定名获取此类的二进制字节流</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</li>
+<li>在内存中生成一个代表这个类的Class对象，作为这个类的各种数据的访问入口</li>
+</ol>
+<h3 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h3><p>链接分为三个子阶段：验证 -&gt; 准备 -&gt; 解析</p>
+<h4 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h4><p>目的在于确保Class文件的字节流中包含信息符合当前虚拟机要求，保证被加载类的正确性，不会危害虚拟机自身安全</p>
+<h4 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h4><p>准备阶段的工作就是为类的静态变量分配内存并设为jvm默认的初值。这里不包含用final修饰的static，因为final在编译(java变成class)的时候就会分配好了默认值，准备阶段会显式初始化</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class ClassInitTest &#123;</span><br><span class="line">    public static int num = 3; //在prepare阶段 num会被赋予初值0；在后面初始化阶段，赋值为3。</span><br><span class="line">                               //在prepare阶段 若是引用对象，初始值为null</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(ClassInitTest.num);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>这里不会为实例变量分配初始化，类变量会分配在方法区中，而实例变量是会随着对象一起分配到Java堆中</strong></p>
+<h4 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h4><p>** 将常量池内的符号引用转换为直接引用的过程** </p>
+<p>比如我们要在内存中找一个类里面的一个叫做show的方法，显然是找不到。但是在解析阶段，jvm就会把show这个名字转换为指向方法区的的一块内存地址，比如c17164，通过c17164就可以找到show这个方法具体分配在内存的哪一个区域了。这里show就是符号引用，而c17164就是直接引用。<strong>在解析阶段，jvm会将所有的类或接口名、字段名、方法名转换为具体的内存地址。</strong></p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>类的初始化时机:</p>
+<ol>
+<li>创建类的实例</li>
+<li>访问某个类或接口的静态变量，或者对该静态变量赋值</li>
+<li>调用类的静态方法</li>
+<li>反射（比如：Class.forName(“com.atguigu.Test”)）</li>
+<li>初始化一个类的子类</li>
+<li>Java虚拟机启动时被标明为启动类的类</li>
+<li>JDK7开始提供的动态语言支持：java.lang.invoke.MethodHandle实例的解析结果REF_getStatic、REF putStatic、REF_invokeStatic句柄对应的类没有初始化，则初始化</li>
+</ol>
+<p>除了以上七种情况，其他使用Java类的方式都被看作是对类的被动使用，都不会导致类的初始化，即不会执行初始化阶段（不会调用 clinit() 方法和 init() 方法）</p>
+<h4 id="clinit-方法"><a href="#clinit-方法" class="headerlink" title="clinit()方法"></a>clinit()方法</h4><p>初始化阶段就是执行类构造器方法<clinit>()的过程</p>
+<ol>
+<li>此方法不需定义，<strong>是javac编译器自动收集类中的所有类变量的赋值动作和静态代码块中的语句合并而来</strong>。也就是说，当我们代码中包含static变量的时候，就会有clinit方法</li>
+<li><code>&lt;clinit&gt;()</code>方法中的指令按语句在源文件中出现的顺序执行</li>
+<li><code>&lt;clinit&gt;()</code>不同于类的构造器<code>&lt;init&gt;()</code>。（init()每次创建实例对象时调用）</li>
+<li>若该类具有父类，JVM会保证子类的<code>&lt;clinit&gt;()</code>执行前，父类的<code>&lt;clinit&gt;()</code>已经执行完毕</li>
+<li>虚拟机必须保证一个类的<code>&lt;clinit&gt;()</code>方法在多线程下被同步加锁 ,它只会执行一次</li>
+</ol>
+<h4 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class Father &#123;</span><br><span class="line">    private int i = test();</span><br><span class="line">    private static int j = method();</span><br><span class="line"></span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;1 父类静态代码块&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Father() &#123;</span><br><span class="line">        System.out.println(&quot;2 父类无参构造器&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(&quot;3 父类代码块&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int test() &#123;</span><br><span class="line">        System.out.println(&quot;4 父类 test 方法&quot;);</span><br><span class="line">        return 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static int method() &#123;</span><br><span class="line">        System.out.println(&quot;5 父类 method 方法&quot;);</span><br><span class="line">        return 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class Son extends Father&#123;</span><br><span class="line"></span><br><span class="line">    private int i = test();</span><br><span class="line"></span><br><span class="line">    private static int j = method();</span><br><span class="line"></span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;6 子类静态代码块&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Son() &#123;</span><br><span class="line">        System.out.println(&quot;7 子类无参构造函数&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        System.out.println(&quot;8 子类代码块&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public int test() &#123;</span><br><span class="line">        System.out.println(&quot;9 子类 test 方法&quot;);</span><br><span class="line">        return 1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static int method() &#123;</span><br><span class="line">        System.out.println(&quot;10 子类 method 方法&quot;);</span><br><span class="line">        return 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们new一个son实例时，会发生什么？正确输出如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">5 父类 method 方法</span><br><span class="line">1 父类静态代码块</span><br><span class="line">10 子类 method 方法</span><br><span class="line">6 子类静态代码块</span><br><span class="line">9 子类 test 方法</span><br><span class="line">3 父类代码块</span><br><span class="line">2 父类无参构造器</span><br><span class="line">9 子类 test 方法</span><br><span class="line">8 子类代码块</span><br><span class="line">7 子类无参构造函数</span><br></pre></td></tr></table></figure>
+
+<p>我们知道在实例化对象前，在实例化对象前，jvm 需要去方法区找有没有这个对象对应的class文件。由于Son类有父类，按照规则又会先去看看父类初始化没有。</p>
+<p>如果father 类没有初始化，所以又先去调用<code>Father.&lt;clinit&gt;()</code>方法。而<code>&lt;clinit&gt;()</code>方法由静态类变量显式赋值代码、静态代码块组成。谁在前，谁先执行。<code>Father.&lt;clinit&gt;()</code>结束，开时执行子类的<code>Son.&lt;clinit&gt;()</code>方法。所以</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">5 父类 method 方法</span><br><span class="line">1 父类静态代码块</span><br><span class="line">10 子类 method 方法</span><br><span class="line">6 子类静态代码块</span><br></pre></td></tr></table></figure>
+
+<p>类初始化之后，就是对象实例化.</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Son() &#123;</span><br><span class="line">    // 这句写或者不写，都一定会执行，子类构造器一定会调用父类构造器。</span><br><span class="line"> // super();</span><br><span class="line">    System.out.println(&quot;7 子类无参构造函数&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是我们知道子类构造器中有super的调用。所以，<code>Son.&lt;init&gt;</code>执行前先调用<code>Father.&lt;init&gt;</code></p>
+<p>然后我们知道每次构造会执行：</p>
+<ol>
+<li>成员变量的赋值代码</li>
+<li>非静态代码块，和第一条，谁先出现，谁先执行</li>
+<li>对应构造器代码【最后执行】</li>
+</ol>
+<p>接着，我们得到这样的结果</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">9 子类 test 方法</span><br><span class="line">3 父类代码块</span><br><span class="line">2 父类无参构造器</span><br><span class="line">9 子类 test 方法</span><br><span class="line">8 子类代码块</span><br><span class="line">7 子类无参构造函数</span><br></pre></td></tr></table></figure>
+
+<p>但是,我们这里结果的第一行我们按照预期以为应该是打印的：4 父类 test 方法。但是实际却是:9 子类 test 方法</p>
+<p>原本该是:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class Father &#123;</span><br><span class="line">    private int i = this.test();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是，子类重写了test方法。运行时，此时Father中的this指的是Son类。这个就是java的多态。</p>
+<p>我们可以另外验证一下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Father() &#123;</span><br><span class="line">    System.out.println(this.getClass().getName());   =&gt; 返回Son</span><br><span class="line">    System.out.println(&quot;2 父类无参构造器&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
 </search>
