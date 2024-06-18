@@ -1623,7 +1623,7 @@
 <li>出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类</li>
 </ol>
 <h2 id="扩展类加载器"><a href="#扩展类加载器" class="headerlink" title="扩展类加载器"></a>扩展类加载器</h2><ol>
-<li>Java语言编写，由sun.misc.Launcher$ExtClassLoader实现</li>
+<li>Java语言编写，由<code>sun.misc.Launcher$ExtClassLoader</code>实现</li>
 <li>派生于ClassLoader类</li>
 <li>父类加载器为启动类加载器</li>
 <li>从java.ext.dirs系统属性所指定的目录中加载类库，或从JDK的安装目录的jre&#x2F;lib&#x2F;ext子目录（扩展目录）下加载类库。如果用户创建的JAR放在此目录下，也会自动由扩展类加载器加载</li>
@@ -1632,7 +1632,7 @@
 
 
 <h2 id="系统类加载器"><a href="#系统类加载器" class="headerlink" title="系统类加载器"></a>系统类加载器</h2><ol>
-<li>Java语言编写，由sun.misc.LaunchersAppClassLoader实现</li>
+<li>Java语言编写，由<code>sun.misc.Launchers$AppClassLoader</code>实现</li>
 <li>派生于ClassLoader类</li>
 <li>父类加载器为扩展类加载器</li>
 <li>它负责加载环境变量classpath或系统属性java.class.path指定路径下的类库</li>
@@ -1686,6 +1686,26 @@
 <li>如果一个类型是由用户类加载器加载的，那么JVM会将这个类加载器的一个引用作为类型信息的一部分保存在方法区中</li>
 <li>当解析一个类型到另一个类型的引用的时候，JVM需要保证这两个类型的类加载器是相同的</li>
 </ol>
+]]></content>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>运行时数据区</title>
+    <url>/posts/11595de/</url>
+    <content><![CDATA[<p>我们通过磁盘或者网络IO得到的数据，都需要先加载到内存中，然后CPU从内存中获取数据进行读取。Java虚拟机在执行Java程序的过程中会将其管理的内存划分为不同的数据区域</p>
+<span id="more"></span>
+
+<p><img src="/images/10006199-a4108d8fb7810a71.png" alt="运行时数据区"></p>
+<p>其中方法区跟堆都是随着虚拟机启动而创建，随着虚拟机退出而销毁。是多个线程共享的。</p>
+<p>而 <strong>虚拟机栈，本地方法栈，程序计数器</strong>，每个线程都各有一份，是私有的</p>
+<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>它并非是广义上所指的物理寄存器，是JVM对物理PC寄存器的一种抽象模拟。</p>
+<p>PC寄存器用来存储指向下一条指令的地址，也即将要执行的指令代码。由执行引擎读取下一条指令，并执行该指令。<strong>它是唯一一个在Java虚拟机规范中没有规定任何OutofMemoryError情况的区域</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    int i = 10;</span><br><span class="line">    int j = 20;</span><br><span class="line">    int k = i + j;</span><br><span class="line"></span><br><span class="line">    String s = &quot;abc&quot;;</span><br><span class="line">    System.out.println(i);</span><br><span class="line">    System.out.println(k);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用javap反编译字节码后，得到指令</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public static void main(java.lang.String[]);</span><br><span class="line">    descriptor: ([Ljava/lang/String;)V</span><br><span class="line">    flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=2, locals=5, args_size=1</span><br><span class="line">         0: bipush        10</span><br><span class="line">         2: istore_1</span><br><span class="line">         3: bipush        20</span><br><span class="line">         5: istore_2</span><br><span class="line">         6: iload_1</span><br><span class="line">         7: iload_2</span><br><span class="line">         8: iadd</span><br><span class="line">         9: istore_3</span><br><span class="line">        10: ldc           #2                  // String abc</span><br><span class="line">        12: astore        4</span><br><span class="line">        14: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        17: iload_1</span><br><span class="line">        18: invokevirtual #4                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line">        21: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        24: iload_3</span><br><span class="line">        25: invokevirtual #4                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line">        28: return</span><br></pre></td></tr></table></figure>
+<p>这前面0，2，3，5… 数字表示的是指令地址，也叫偏移地址。bipush，iadd，istore_1，iload_1表示的是操作指令。</p>
 ]]></content>
       <tags>
         <tag>jvm</tag>

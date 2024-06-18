@@ -28,7 +28,7 @@
 <meta property="og:description" content="类加载器它的主要作用是查找和加载Class文件到JVM中。 JVM严格来讲支持两种类型的类加载器 。分别为引导类加载器（Bootstrap ClassLoader）和自定义类加载器（User-Defined ClassLoader） 从概念上来讲，自定义类加载器一般指的是程序中由开发人员自定义的一类类加载器，但是Java虚拟机规范却没有这么定义，而是将所有派生于抽象类ClassLoader的类加载">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-05-14T07:38:29.000Z">
-<meta property="article:modified_time" content="2024-05-14T08:35:17.872Z">
+<meta property="article:modified_time" content="2024-06-18T03:17:45.134Z">
 <meta property="article:author" content="Magic">
 <meta property="article:tag" content="jvm">
 <meta name="twitter:card" content="summary">
@@ -206,10 +206,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2024-05-14 15:38:29 / 修改时间：16:35:17" itemprop="dateCreated datePublished" datetime="2024-05-14T15:38:29+08:00">2024-05-14</time>
+              <time title="创建时间：2024-05-14 15:38:29" itemprop="dateCreated datePublished" datetime="2024-05-14T15:38:29+08:00">2024-05-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-06-18 11:17:45" itemprop="dateModified" datetime="2024-06-18T11:17:45+08:00">2024-06-18</time>
+              </span>
 
           
 
@@ -234,7 +240,7 @@
 <li>出于安全考虑，Bootstrap启动类加载器只加载包名为java、javax、sun等开头的类</li>
 </ol>
 <h2 id="扩展类加载器"><a href="#扩展类加载器" class="headerlink" title="扩展类加载器"></a>扩展类加载器</h2><ol>
-<li>Java语言编写，由sun.misc.Launcher$ExtClassLoader实现</li>
+<li>Java语言编写，由<code>sun.misc.Launcher$ExtClassLoader</code>实现</li>
 <li>派生于ClassLoader类</li>
 <li>父类加载器为启动类加载器</li>
 <li>从java.ext.dirs系统属性所指定的目录中加载类库，或从JDK的安装目录的jre&#x2F;lib&#x2F;ext子目录（扩展目录）下加载类库。如果用户创建的JAR放在此目录下，也会自动由扩展类加载器加载</li>
@@ -243,7 +249,7 @@
 
 
 <h2 id="系统类加载器"><a href="#系统类加载器" class="headerlink" title="系统类加载器"></a>系统类加载器</h2><ol>
-<li>Java语言编写，由sun.misc.LaunchersAppClassLoader实现</li>
+<li>Java语言编写，由<code>sun.misc.Launchers$AppClassLoader</code>实现</li>
 <li>派生于ClassLoader类</li>
 <li>父类加载器为扩展类加载器</li>
 <li>它负责加载环境变量classpath或系统属性java.class.path指定路径下的类库</li>
@@ -318,7 +324,10 @@
     <a href="/posts/13cb3a0e/" rel="prev" title="类加载子系统">
       <i class="fa fa-chevron-left"></i> 类加载子系统
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/posts/11595de/" rel="next" title="运行时数据区">
+      运行时数据区 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -391,7 +400,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
