@@ -1705,7 +1705,136 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    int i = 10;</span><br><span class="line">    int j = 20;</span><br><span class="line">    int k = i + j;</span><br><span class="line"></span><br><span class="line">    String s = &quot;abc&quot;;</span><br><span class="line">    System.out.println(i);</span><br><span class="line">    System.out.println(k);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>用javap反编译字节码后，得到指令</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public static void main(java.lang.String[]);</span><br><span class="line">    descriptor: ([Ljava/lang/String;)V</span><br><span class="line">    flags: ACC_PUBLIC, ACC_STATIC</span><br><span class="line">    Code:</span><br><span class="line">      stack=2, locals=5, args_size=1</span><br><span class="line">         0: bipush        10</span><br><span class="line">         2: istore_1</span><br><span class="line">         3: bipush        20</span><br><span class="line">         5: istore_2</span><br><span class="line">         6: iload_1</span><br><span class="line">         7: iload_2</span><br><span class="line">         8: iadd</span><br><span class="line">         9: istore_3</span><br><span class="line">        10: ldc           #2                  // String abc</span><br><span class="line">        12: astore        4</span><br><span class="line">        14: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        17: iload_1</span><br><span class="line">        18: invokevirtual #4                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line">        21: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">        24: iload_3</span><br><span class="line">        25: invokevirtual #4                  // Method java/io/PrintStream.println:(I)V</span><br><span class="line">        28: return</span><br></pre></td></tr></table></figure>
-<p>这前面0，2，3，5… 数字表示的是指令地址，也叫偏移地址。bipush，iadd，istore_1，iload_1表示的是操作指令。</p>
+<p>这前面0，2，3，5… 数字表示的是指令地址，也叫偏移地址。bipush，iadd，istore_1，iload_1表示的是操作指令。后面的<code>#数字</code>则是运行时常量池中的符号引用。</p>
+<p>PC寄存器是线程私有的。我们都知道在多线程场景下，CPU会不停地做任务切换，这样必然导致经常中断或恢复。为了能够准确地记录各个线程正在执行的当前字节码指令地址，最好的办法自然是为每一个线程都分配一个PC寄存器，这样一来各个线程之间便可以进行独立计算</p>
+<h2 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h2><p>它的生命周期与线程相同，与线程是同时创建的。每个方法被执行的时候都会创建一个栈帧，把栈帧压入栈，当方法正常返回或者抛出未捕获的异常时，栈帧就会出栈。</p>
+<p>一个Java虚拟机栈包含了很多个栈帧。<strong>一个栈帧用来存储局部变量表，操作数栈，动态链接，方法返回值等信息</strong></p>
+<h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><p>虚拟机可能用到C来实现Native语言。它与虚拟机栈基本类似，也会抛出StackOverflowError和OOM</p>
+<h2 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h2><p>几乎所有对象实例都在这里分配内存。存放new生成的对象和数组</p>
+<p>是虚拟机管理的内存中最大的一块</p>
+<p>是所有线程共享的区域</p>
+<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><p>用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译后的代码等数据。是线程共享的</p>
+<h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h2><p>Class文件不仅包含类的版本，接口，字段和方法等信息，还包含常量池，它用来存放编译时期生成的字面量和符号引用，这些内容会在类加载后存放在方法区的运行时常量池</p>
+]]></content>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>虚拟机栈</title>
+    <url>/posts/594d8429/</url>
+    <content><![CDATA[<p>Java虚拟机栈也叫java栈。每个线程在创建时都会创建一个虚拟机栈，其内部保存一个个的栈帧（Stack Frame），对应着一次次的Java方法调用，栈是线程私有的，是一个后入先出的栈。</p>
+<span id="more"></span>
+
+<h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><ul>
+<li>栈是一种快速有效的分配存储方式，访问速度仅次于程序计数器</li>
+<li>JVM直接对Java栈的操作只有两个：<ul>
+<li>每个方法执行，伴随着进栈（入栈、压栈）</li>
+<li>执行结束后的出栈工作</li>
+</ul>
+</li>
+<li>对于栈来说不存在垃圾回收问题,但是可能存在OOM</li>
+</ul>
+<h2 id="栈大小"><a href="#栈大小" class="headerlink" title="栈大小"></a>栈大小</h2><ol>
+<li><p>如果采用固定大小的Java虚拟机栈，那每一个线程的Java虚拟机栈容量可以在线程创建的时候独立选定。如果线程请求分配的栈容量超过Java虚拟机栈允许的最大容量，Java虚拟机将会抛出一个StackoverflowError(栈溢出) 异常。</p>
+</li>
+<li><p>如果Java虚拟机栈可以动态扩展，并且在尝试扩展的时候无法申请到足够的内存，或者在创建新的线程时没有足够的内存去创建对应的虚拟机栈，那Java虚拟机将会抛出一个 OutofMemoryError(内存溢出) 异常。</p>
+</li>
+</ol>
+<p><strong>如何设置栈大小？</strong><br>可以使用参数 -Xss 选项来设置线程的最大栈空间，栈的大小直接决定了函数调用的最大可达深度。</p>
+<p>设置线程栈大小,可以以字节表示，以字母k或K表示KB，以字母m或M表示MB，以字母g或G表示GB。</p>
+<p>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">具体是Run/Debug Configurations -&gt; VM options 中加入下面任意</span><br><span class="line">-Xss1m</span><br><span class="line">-Xss1024k</span><br><span class="line">-Xss1048576</span><br></pre></td></tr></table></figure>
+<p>都是设置为1M大小</p>
+<h2 id="栈帧"><a href="#栈帧" class="headerlink" title="栈帧"></a>栈帧</h2><p>栈中的数据都是以栈帧（Stack Frame）的格式存在，每个方法都各自对应一个栈帧。<strong>在一条活动线程中，一个时间点上，只会有一个活动的栈帧。即只有当前正在执行的方法的栈帧（栈顶栈帧）是有效的。这个栈帧被称为当前栈帧（Current Frame），与当前栈帧相对应的方法就是当前方法（Current Method），定义这个方法的类就是当前类（Current Class）</strong></p>
+<p>每个栈帧中存储着：</p>
+<ul>
+<li>局部变量表（Local Variables）</li>
+<li>操作数栈（Operand Stack）（或表达式栈）</li>
+<li>动态链接（Dynamic Linking）（或指向运行时常量池的方法引用）</li>
+<li>方法返回地址（Return Address）（或方法正常退出或者异常退出的定义）</li>
+</ul>
+<h3 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h3><p>定义为一个数字数组，主要用于存储方法参数和定义在方法体内的局部变量，这些数据类型包括各类基本数据类型、对象引用（reference），以及returnAddress返回值类型。</p>
+<p>局部变量表所需的容量大小是在编译期确定下来的，并保存在方法的Code属性的maximum local variables数据项中。在方法运行期间是不会改变局部变量表的大小的。</p>
+<p>局部变量表中的变量只在当前方法调用中有效。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public int fun()&#123;</span><br><span class="line">    int a = 10;</span><br><span class="line">    int b = 20;</span><br><span class="line">    Date date = new Date();</span><br><span class="line">    return 20;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例如这样一个方法，通过jclasslib查看字节码<br><img src="/images/localvar.png" alt="localvar"><br>同时在杂项中，我们可以看到其他信息<br><img src="/images/localvar2.png" alt="localvar2"></p>
+<p>如图得到了一个重要的信息，最大槽数为4。<br><strong>什么是槽？</strong><br>局部变量表，最基本的存储单元是Slot（变量槽）。在局部变量表里，32位以内的类型(byte、short、char在储存前被转换为int，boolean也被转换为int，0表示false，非0表示true)只占用一个slot（包括returnAddress类型），64位的类型占用两个slot（1ong和double）。参数值的存放总是从局部变量数组索引 0 的位置开始，到数组长度-1的索引结束。局部变量将会<strong>按照代码顺序</strong>被复制到局部变量表中的每一个slot上</p>
+<p><strong>具体有哪些局部变量呢？</strong><br>我们可以在LocalVariableTable中查看<br><img src="/images/localvar3.png" alt="localvar3"></p>
+<p>图中，起始PC表示的是字节码的偏移地址，长度表示这个变量的作用范围，序号表示变量在槽中的索引，名字也就是变量名。</p>
+<p>我们可以看到，第一个变量是this，放在了slot为0的位置，所以成员方法可以使用成员属性。而在static方法的局部变量表中没有this。</p>
+<p>另外，slot是可以重复利用的。如果一个局部变量过了其作用域，那么在其作用域之后申明新的局部变量变就很有可能会复用过期局部变量的槽位，从而达到节省资源的目的</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void test() &#123;</span><br><span class="line">    int a = 0;</span><br><span class="line">    &#123;</span><br><span class="line">        int b = 0;</span><br><span class="line">        b = a + 1;</span><br><span class="line">    &#125;</span><br><span class="line">    //变量c使用之前已经销毁的变量b占据的slot的位置</span><br><span class="line">    int c = a + 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="操作数栈"><a href="#操作数栈" class="headerlink" title="操作数栈"></a>操作数栈</h3><p>也在编译的时候就确定了，被写入到了 Code 属性的 maximum stack size 中。当一个方法刚开始执行的时候，操作数栈是空的，在方法执行过程中，会有各种字节码指令往操作数栈中写入和取出数据，也就是入栈和出栈操作。</p>
+<p>例如下面这代码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public int fun(int a,int b)&#123;</span><br><span class="line">    return a+b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它的字节码指令是</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0 iload_1           -&gt; 用于将局部变量表中下标为 1 的 int 类型变量加载到操作数栈上（下标为 0 的是 this）</span><br><span class="line">1 iload_2           -&gt; 用于将局部变量表中下标为 2 的 int 类型变量加载到操作数栈上；</span><br><span class="line">2 iadd              -&gt; 用于 int 类型的加法运算,运算完后，将操作数取出栈，再把结果压入栈</span><br><span class="line">3 ireturn           -&gt; 为返回值为 int 的方法返回指令</span><br></pre></td></tr></table></figure>
+<p>所以操作数栈的最大深度是2。与slot类似，32bit的类型占用一个栈单位深度，64bit的类型占用两个栈单位深度</p>
+<h3 id="动态链接"><a href="#动态链接" class="headerlink" title="动态链接"></a>动态链接</h3><p>每一个栈帧内部都包含一个指向<strong>运行时常量池</strong>中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程中的动态链接。在Java源文件被编译到字节码文件中时，所有的变量和方法引用都作为符号引用（Symbolic Reference）保存在class文件的常量池里。当类加载加载的时候，会将用于存放编译期生成的各种字面量和符号引用放在运行时常量池中</p>
+<h3 id="方法返回地址"><a href="#方法返回地址" class="headerlink" title="方法返回地址"></a>方法返回地址</h3><p>当一个方法开始执行后，只有两种方式可以退出这个方法：</p>
+<ul>
+<li>正常退出</li>
+<li>异常退出</li>
+</ul>
+<p>方法退出的过程实际上等同于把当前栈帧出栈，因此接下来可能执行的操作有：恢复上层方法的局部变量表和操作数栈，<strong>把返回值（如果有的话）压入调用者栈帧的操作数栈中</strong>，调整 PC 计数器的值，找到下一条要执行的指令等。</p>
+<p>无论通过哪种方式退出，在方法退出后都返回到该方法被调用的位置。方法正常退出时，调用者的pc计数器的值作为返回地址，即调用该方法的指令的下一条指令的地址。而通过异常退出的，返回地址是要通过<strong>异常表</strong>来确定</p>
+<p>异常处理表：</p>
+<ul>
+<li>from ：字节码指令起始地址</li>
+<li>to ：字节码指令结束地址</li>
+<li>target ：出现异常跳转至地址为 11 的指令执行</li>
+<li>type ：捕获异常的类型</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>方法的调用</title>
+    <url>/posts/6aa965b7/</url>
+    <content><![CDATA[<p><strong>java是有多态的特性的，那么在有重写，重载的状况下，jvm是怎么知道需要调用哪个方法的呢？</strong></p>
+<p>在JVM中，将符号引用转换为调用方法的直接引用与方法的绑定机制相关</p>
+<ul>
+<li><p>静态链接：<br>当一个字节码文件被装载进JVM内部时，<strong>如果被调用的目标方法在编译期确定，且运行期保持不变时</strong>，这种情况下将调用方法的符号引用转换为直接引用的过程称之为静态链接</p>
+</li>
+<li><p>动态链接：<br>如果<strong>被调用的方法在编译期无法被确定下来</strong>，也就是说，只能够在程序运行期将调用的方法的符号转换为直接引用，由于这种引用转换过程具备动态性，因此也被称之为动态链接。</p>
+<span id="more"></span></li>
+</ul>
+<p><strong>静态链接和动态链接对应的方法的绑定机制为：早期绑定（Early Binding）和晚期绑定（Late Binding）。绑定是一个字段、方法或者类在符号引用被替换为直接引用的过程，这仅仅发生一次。</strong></p>
+<ul>
+<li><p>早期绑定<br>早期绑定就是指被调用的目标方法如果在编译期可知，且运行期保持不变时，即可将这个方法与所属的类型进行绑定，这样一来，由于明确了被调用的目标方法究竟是哪一个，因此也就可以使用静态链接的方式将符号引用转换为直接引用。</p>
+</li>
+<li><p>晚期绑定<br>如果被调用的方法在编译期无法被确定下来，只能够在程序运行期根据实际的类型绑定相关的方法，这种绑定方式也就被称之为晚期绑定。</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class Animal &#123;</span><br><span class="line"></span><br><span class="line">    public void eat() &#123;</span><br><span class="line">        System.out.println(&quot;动物进食&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface Huntable &#123;</span><br><span class="line">    void hunt();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Dog extends Animal implements Huntable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void eat() &#123;</span><br><span class="line">        System.out.println(&quot;狗吃骨头&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void hunt() &#123;</span><br><span class="line">        System.out.println(&quot;捕食耗子，多管闲事&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Cat extends Animal implements Huntable &#123;</span><br><span class="line"></span><br><span class="line">    public Cat() &#123;</span><br><span class="line">        super();//表现为：早期绑定</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Cat(String name) &#123;</span><br><span class="line">        this();//表现为：早期绑定</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void eat() &#123;</span><br><span class="line">        super.eat();//表现为：早期绑定</span><br><span class="line">        System.out.println(&quot;猫吃鱼&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void hunt() &#123;</span><br><span class="line">        System.out.println(&quot;捕食耗子，天经地义&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class AnimalTest &#123;</span><br><span class="line">    public void showAnimal(Animal animal) &#123;</span><br><span class="line">        animal.eat();//表现为：晚期绑定</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void showHunt(Huntable h) &#123;</span><br><span class="line">        h.hunt();//表现为：晚期绑定</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="虚方法"><a href="#虚方法" class="headerlink" title="虚方法"></a>虚方法</h2><p>如果方法在编译期就确定了具体的调用版本，这个版本在运行时是不可变的。这样的方法称为非虚方法。静态方法、私有方法、final方法、实例构造器、父类方法都是非虚方法。其他为虚方法</p>
+<p>虚拟机中调用方法的指令</p>
+<ul>
+<li>普通指令：<ul>
+<li>invokestatic：调用静态方法，解析阶段确定唯一方法版本</li>
+<li>invokespecial：调用<init>方法、私有及父类方法，解析阶段确定唯一方法版本</li>
+<li>invokevirtual：调用所有虚方法</li>
+<li>invokeinterface：调用接口方法</li>
+</ul>
+</li>
+<li>动态调用指令<ul>
+<li>invokedynamic：动态解析出需要调用的方法，然后执行。主要是为了支持动态语言的</li>
+</ul>
+</li>
+</ul>
+<p>前四条指令固化在虚拟机内部，方法的调用执行不可人为干预。而invokedynamic指令则支持由用户确定方法版本。其中invokestatic指令和invokespecial指令调用的方法称为非虚方法，其余的（final修饰的除外）称为虚方法。</p>
+<h2 id="Java语言中方法重写的本质"><a href="#Java语言中方法重写的本质" class="headerlink" title="Java语言中方法重写的本质"></a>Java语言中方法重写的本质</h2><ol>
+<li>找到操作数栈顶的第一个元素所执行的对象的实际类型，记作C。</li>
+<li>如果在类型C中找到与常量中的描述符合简单名称都相符的方法，则进行访问权限校验。如果通过则返回这个方法的直接引用，查找过程结束。如果不通过，则返回java.lang.IllegalAccessError 异常</li>
+<li>否则，按照继承关系从下往上依次对C的各个父类进行第2步的搜索和验证过程。</li>
+<li>如果始终没有找到合适的方法，则抛出java.lang.AbstractMethodError异常。</li>
+</ol>
 ]]></content>
       <tags>
         <tag>jvm</tag>
