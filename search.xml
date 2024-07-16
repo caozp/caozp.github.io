@@ -1933,4 +1933,55 @@
         <tag>jvm</tag>
       </tags>
   </entry>
+  <entry>
+    <title>java方法区</title>
+    <url>/posts/bbfc6654/</url>
+    <content><![CDATA[<p>方法区主要是存放的是 Class，而堆中主要存放的是实例化的对象。</p>
+<p>方法区也是线程共享的区域。多个线程同时加载同一个类时，只能有一个线程能加载该类，其他线程只能等等待该线程加载完毕，然后直接使用该类，即类只能加载一次</p>
+<p>方法区在JVM启动的时候被创建，关闭JVM就会释放这个区域的内存</p>
+<p>方法区的大小决定了系统可以保存多少个类，如果系统定义了太多的类，导致方法区溢出，虚拟机同样会抛出内存溢出错误。java.lang.OutofMemoryError:PermGen space或者java.lang.OutOfMemoryError:Metaspace</p>
+<p>方法区的大小，跟堆空间一样，可以选择固定大小或者可扩展</p>
+<span id="more"></span>
+
+<h2 id="HotSpot方法区演变"><a href="#HotSpot方法区演变" class="headerlink" title="HotSpot方法区演变"></a>HotSpot方法区演变</h2><p>在 JDK7 及以前，习惯上把方法区，称为永久代。JDK8开始，使用元空间取代了永久代。元空间的本质和永久代类似，都是对JVM规范中方法区的实现。不过元空间与永久代最大的区别在于：<strong>元空间不在虚拟机设置的内存中，而是使用本地内存</strong></p>
+<h3 id="JDK7之前"><a href="#JDK7之前" class="headerlink" title="JDK7之前"></a>JDK7之前</h3><p>通过-XX:Permsize来设置永久代初始分配空间。默认值是20.75M</p>
+<h3 id="JDK8及以后-元空间"><a href="#JDK8及以后-元空间" class="headerlink" title="JDK8及以后(元空间)"></a>JDK8及以后(元空间)</h3><p>元数据区大小可以使用参数 -XX:MetaspaceSize 和 -XX:MaxMetaspaceSize 指定</p>
+<p>-XX:MetaspaceSize：设置初始的元空间大小。对于一个 64位 的服务器端 JVM 来说，其默认的 -XX:MetaspaceSize值为21MB。这就是初始的高水位线，一旦触及这个水位线，Full GC将会被触发并卸载没用的类（即这些类对应的类加载器不再存活），然后这个高水位线将会重置。新的高水位线的值取决于GC后释放了多少元空间。如果释放的空间不足，那么在不超过MaxMetaspaceSize时，适当提高该值。如果释放空间过多，则适当降低该值。</p>
+<p>如果初始化的高水位线设置过低，上述高水位线调整情况会发生很多次。通过垃圾回收器的日志可以观察到Full GC多次调用。为了避免频繁地GC，建议将-XX:MetaspaceSize设置为一个相对较高的值</p>
+<p>方法区OOM例子</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class OOMTest extends ClassLoader &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        int j = 0;</span><br><span class="line">        try &#123;</span><br><span class="line">            OOMTest test = new OOMTest();</span><br><span class="line">            for (int i = 0; i &lt; 10000; i++) &#123;</span><br><span class="line">                //创建ClassWriter对象，用于生成类的二进制字节码</span><br><span class="line">                ClassWriter classWriter = new ClassWriter(0);</span><br><span class="line">                //指明版本号，修饰符，类名，包名，父类，接口</span><br><span class="line">                classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, &quot;Class&quot; + i, null, &quot;java/lang/Object&quot;, null);</span><br><span class="line">                //返回byte[]</span><br><span class="line">                byte[] code = classWriter.toByteArray();</span><br><span class="line">                //类的加载</span><br><span class="line">                test.defineClass(&quot;Class&quot; + i, code, 0, code.length);//Class对象</span><br><span class="line">                j++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            System.out.println(j);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用默认的 JVM 参数，元空间不设置上限，得到结果10000。但是设置元空间上限-XX:MetaspaceSize&#x3D;10m -XX:MaxMetaspaceSize&#x3D;10m。<br>则报错</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">8531</span><br><span class="line">Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Metaspace</span><br><span class="line">	at java.lang.ClassLoader.defineClass1(Native Method)</span><br><span class="line">	at java.lang.ClassLoader.defineClass(ClassLoader.java:763)</span><br><span class="line">	at java.lang.ClassLoader.defineClass(ClassLoader.java:642)</span><br><span class="line">	at com.atguigu.java.OOMTest.main(OOMTest.java:29)</span><br></pre></td></tr></table></figure>
+
+<h2 id="方法区存储内容"><a href="#方法区存储内容" class="headerlink" title="方法区存储内容"></a>方法区存储内容</h2><p><strong>它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等</strong></p>
+<h3 id="类型信息"><a href="#类型信息" class="headerlink" title="类型信息"></a>类型信息</h3><p>对每个加载的类型（类class、接口interface、枚举enum、注解annotation），JVM必须在方法区中存储以下类型信息：这个类型的完整有效名称，直接父类的完整有效名，修饰符，直接接口的一个有序列表</p>
+<h3 id="域信息"><a href="#域信息" class="headerlink" title="域信息"></a>域信息</h3><p>JVM必须在方法区中保存类型的所有域的相关信息以及域的声明顺序，域的相关信息包括：域名称，域类型，域修饰符。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public int num;</span><br><span class="line">  descriptor: I</span><br><span class="line">  flags: ACC_PUBLIC</span><br><span class="line"></span><br><span class="line">private static java.lang.String str;</span><br><span class="line">  descriptor: Ljava/lang/String;</span><br><span class="line">  flags: ACC_PRIVATE, ACC_STATIC</span><br></pre></td></tr></table></figure>
+<p>静态变量和类关联在一起，随着类的加载而加载，他们成为类数据在逻辑上的一部分</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public class MethodAreaTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Order order = null;</span><br><span class="line">        order.hello();</span><br><span class="line">        System.out.println(order.count);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Order &#123;</span><br><span class="line">    public static int count = 1;</span><br><span class="line">    public static final int number = 2;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void hello() &#123;</span><br><span class="line">        System.out.println(&quot;hello!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>即使我们把order设置为null，也不会出现空指针异常</p>
+<p>如果是static final修饰的全局常量在编译的时候就会被分配了，已经写死在字节码文件中</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public static final int number;</span><br><span class="line">  descriptor: I</span><br><span class="line">  flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL</span><br><span class="line">  ConstantValue: int 2 </span><br></pre></td></tr></table></figure>
+<h3 id="方法信息"><a href="#方法信息" class="headerlink" title="方法信息"></a>方法信息</h3><p>方法名称，返回类型，参数的数量和类型，修饰符，字节码，操作数栈、局部变量表及大小，异常表。</p>
+<p>如这样</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public void test1();</span><br><span class="line">    descriptor: ()V         // 表示方法返回值类型为 void</span><br><span class="line">    flags: ACC_PUBLIC      //方法权限修饰符为 public</span><br><span class="line">    Code:</span><br><span class="line">      stack=3, locals=2, args_size=1       // 操作数栈深度为 3，局部变量个数为 2 个</span><br><span class="line">         0: bipush        20</span><br><span class="line">         2: istore_1</span><br><span class="line">         3: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;</span><br><span class="line">         6: new           #4                  // class java/lang/StringBuilder</span><br><span class="line">         9: dup</span><br><span class="line">        10: invokespecial #5                  // Method java/lang/StringBuilder.&quot;&lt;init&gt;&quot;:()V</span><br><span class="line">        13: ldc           #6                  // String count =</span><br><span class="line">        15: invokevirtual #7                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span><br><span class="line">        18: iload_1</span><br><span class="line">        19: invokevirtual #8                  // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;</span><br><span class="line">        22: invokevirtual #9                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span><br><span class="line">        25: invokevirtual #10                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V</span><br><span class="line">        28: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 17: 0</span><br><span class="line">        line 18: 3</span><br><span class="line">        line 19: 28</span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            0      29     0  this   Lcom/atguigu/java/MethodInnerStrucTest;</span><br><span class="line">            3      26     1 count   I</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h3><p>常量池表（Constant Pool Table）是Class字节码文件的一部分，用于存放编译期生成的各种字面量与符号引用，这部分内容将在类加载后存放到方法区的运行时常量池中。运行时常量池中包含多种不同的常量，包括编译期就已经明确的数值字面量，也包括到运行期解析后才能够获得的方法或者字段引用。此时不再是常量池中的符号地址了，这里换为真实地址。</p>
+<h2 id="静态变量"><a href="#静态变量" class="headerlink" title="静态变量"></a>静态变量</h2><p><strong>静态对象实体始终是分配在堆中。</strong> 但是指向实体的变量不是</p>
+<p>JDK1.6及以前，静态变量引用存储在永久代上。但是JDK1.7，字符串常量池，静态变量移除，保存在堆中。</p>
+<p><strong>为什么要调整位置？</strong><br>因为永久代的回收效率很低，在Full GC的时候才会执行永久代的垃圾回收，而Full GC是老年代的空间不足、永久代不足时才会触发。当我们开发中会有大量的字符串被创建，回收效率低，导致永久代内存不足。放到堆里，能及时回收内存。</p>
+<h2 id="方法区的垃圾回收"><a href="#方法区的垃圾回收" class="headerlink" title="方法区的垃圾回收"></a>方法区的垃圾回收</h2><p>方法区的垃圾收集主要回收两部分内容：常量池中废弃的常量和不再使用的类型。只要常量池中的常量没有被任何地方引用，就可以被回收。</p>
+<p>另外就是类卸载，要判定一个类型是否属于“不再被使用的类”的条件就比较苛刻了。需要同时满足下面三个条件：</p>
+<ol>
+<li>该类所有的实例都已经被回收</li>
+<li>加载该类的类加载器已经被回收</li>
+<li>该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</li>
+</ol>
+<p>在大量使用反射、动态代理、CGLib等字节码框架，动态生成JSP以及OSGi这类频繁自定义类加载器的场景中，通常都需要Java虚拟机具备类型卸载的能力，以保证不会对方法区造成过大的内存压力。</p>
+]]></content>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
 </search>
