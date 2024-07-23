@@ -1984,4 +1984,31 @@
         <tag>jvm</tag>
       </tags>
   </entry>
+  <entry>
+    <title>对象的实例化内存布局和访问定位</title>
+    <url>/posts/2f811178/</url>
+    <content><![CDATA[<h1 id="对象创建步骤"><a href="#对象创建步骤" class="headerlink" title="对象创建步骤"></a>对象创建步骤</h1><ol>
+<li>判断对象对应的类是否加载、链接、初始化</li>
+<li>为对象分配内存，计算对象占用空间的大小，接着在堆中划分一块内存给新对象。如果实例成员变量是引用变量，仅分配引用变量空间即可，即4个字节大小</li>
+<li>处理并发问题</li>
+<li>初始化分配到的空间，所有属性设置默认值，保证对象实例字段在不赋值可以直接使用</li>
+<li>设置对象的对象头,将对象的所属类（即类的元数据信息）、对象的HashCode和对象的GC信息、锁信息等数据存储在对象的对象头中</li>
+<li>执行init方法进行初始化</li>
+</ol>
+<span id="more"></span>
+
+<h1 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h1><h2 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h2><p>包含两部分，运行时元数据和类型指针</p>
+<p>运行时元数据Mark Word:包含哈希值，GC分代年龄，锁状态标志，偏向线程ID，偏向时间戳。他在32位jvm中的长度为32bit。MarkWord被设计成一个非固定的数据结构，以便在极小的空间存储尽量多的信息</p>
+<p><img src="/images/20190612142936955.png" alt="mark word"></p>
+<p>类型指针: 指向方法区，区分对象的类型。</p>
+<h2 id="实例数据"><a href="#实例数据" class="headerlink" title="实例数据"></a>实例数据</h2><p>对象真正存储的信息，有指向常量池，或者堆中的其他实例</p>
+<h2 id="对齐填充"><a href="#对齐填充" class="headerlink" title="对齐填充"></a>对齐填充</h2><p>占位的作用。</p>
+<h1 id="访问方式"><a href="#访问方式" class="headerlink" title="访问方式"></a>访问方式</h1><p>有句柄访问和直接访问两种方式。</p>
+<h2 id="句柄"><a href="#句柄" class="headerlink" title="句柄"></a>句柄</h2><p>在堆空间中开辟了一块空间作为句柄池，句柄池本身也占空间。引用指向句柄，句柄包含指向实例数据的指针和指向类型的执行。通过两次指针访问才能访问到堆中的对象，效率低</p>
+<h2 id="直接访问"><a href="#直接访问" class="headerlink" title="直接访问"></a>直接访问</h2><p>直接指针是局部变量表中的引用，直接指向堆中的实例，在对象实例中有类型指针，指向的是方法区中的对象类型数据。hotspot采用这种方式。对象被移动（垃圾收集时移动对象很普遍）时需要修改 reference 的值</p>
+]]></content>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
 </search>
