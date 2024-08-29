@@ -178,6 +178,139 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/posts/e3104623/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Magic">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Welcome">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/e3104623/" class="post-title-link" itemprop="url">java对象的生命周期</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-08-27 15:30:19 / 修改时间：15:46:17" itemprop="dateCreated datePublished" datetime="2024-08-27T15:30:19+08:00">2024-08-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>java对象的生命周期可以分为7个阶段：创建阶段、使用阶段、不可视阶段、不可达阶段、可收集阶段、终结阶段、释放阶段。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/e3104623/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/posts/1265ab80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Magic">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Welcome">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/posts/1265ab80/" class="post-title-link" itemprop="url">java垃圾回收</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-08-27 14:02:16 / 修改时间：15:18:40" itemprop="dateCreated datePublished" datetime="2024-08-27T14:02:16+08:00">2024-08-27</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>垃圾是指在运行程序中没有任何指针指向的对象，如果不及时对内存中的垃圾进行清理，那么，这些垃圾对象所占的内存空间会一直保留到应用程序结束，被保留的空间无法被其他对象使用。甚至可能导致内存溢出。<br>除了释放没用的对象，垃圾回收也可以清除内存里的记录碎片。</p>
+<p>java的垃圾收集器主要是可以对年轻代回收，当然也可以对老年代回收，甚至是全栈和方法区的回收。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/1265ab80/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/posts/ba15c230/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -209,7 +342,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-07-26 14:05:52" itemprop="dateModified" datetime="2024-07-26T14:05:52+08:00">2024-07-26</time>
+                <time title="修改时间：2024-08-27 09:49:13" itemprop="dateModified" datetime="2024-08-27T09:49:13+08:00">2024-08-27</time>
               </span>
 
           
@@ -225,42 +358,14 @@
       
           <h1 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h1><p>String类被声明为final的，不可被继承。它实现了Serializable接口：表示字符串是支持序列化的。实现了Comparable接口：表示String可以比较大小。<br>在jdk8及以前内部定义了final char value[]用于存储字符串数据。JDK9时改为byte[]。</p>
 <p>String是不可变的字符序列，<strong>当对字符串重新赋值时，需要重写指定内存区域赋值，不能使用原有的value进行赋值。当对现有的字符串进行连接操作时，也需要重新指定内存区域赋值，不能使用原有的value进行赋值</strong></p>
-<h1 id="字符串常量池"><a href="#字符串常量池" class="headerlink" title="字符串常量池"></a>字符串常量池</h1><p>Java 6及以前，字符串常量池存放在永久代。</p>
-<p>Java 7中 ，有永久代，Oracle的工程师对字符串池的逻辑做了很大的改变，即将字符串常量池的位置调整到Java堆内</p>
-<p>Jdk1.8及之后： 无永久代，<strong>运行时常量池在元空间，字符串常量池里依然在堆里</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * jdk8中：</span><br><span class="line"> * -XX:MetaspaceSize=6m -XX:MaxMetaspaceSize=6m -Xms6m -Xmx6m</span><br><span class="line"> */</span><br><span class="line">public class StringTest3 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        //使用Set保持着常量池引用，避免full gc回收常量池行为</span><br><span class="line">        Set&lt;String&gt; set = new HashSet&lt;String&gt;();</span><br><span class="line">        //在short可以取值的范围内足以让6MB的PermSize或heap产生OOM了。</span><br><span class="line">        short i = 0;</span><br><span class="line">        while(true)&#123;</span><br><span class="line">            set.add(String.valueOf(i++).intern());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>会报错,证明字符串常量池是在堆中</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space</span><br><span class="line">	at java.util.HashMap.resize(HashMap.java:703)</span><br><span class="line">	at java.util.HashMap.putVal(HashMap.java:662)</span><br><span class="line">	at java.util.HashMap.put(HashMap.java:611)</span><br><span class="line">	at java.util.HashSet.add(HashSet.java:219)</span><br><span class="line">	at com.atguigu.java.StringTest3.main(StringTest3.java:22)</span><br><span class="line"></span><br><span class="line">Process finished with exit code 1</span><br></pre></td></tr></table></figure>
-
-<p>字符串常量池是不会存储相同内容的字符串的</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(&quot;1&quot;);</span><br><span class="line">System.out.println(&quot;2&quot;);</span><br><span class="line">System.out.println(&quot;3&quot;);</span><br><span class="line">System.out.println(&quot;1&quot;);</span><br><span class="line">System.out.println(&quot;2&quot;);</span><br></pre></td></tr></table></figure>
-<p>字符串常量池只会新增三个字符串常量</p>
-<h1 id="字符串拼接"><a href="#字符串拼接" class="headerlink" title="字符串拼接"></a>字符串拼接</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String s1 = &quot;a&quot; + &quot;b&quot; + &quot;c&quot;;</span><br><span class="line">String s2 = &quot;abc&quot;; </span><br><span class="line">System.out.println(s1 == s2);</span><br></pre></td></tr></table></figure>
-<p>这种代码，s1会在编译器优化，将 “a” + “b” + “c” 优化成了 “abc”，所以相等。</p>
-<p>但是如果加号前后有变量</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String s1 = &quot;a&quot;;</span><br><span class="line">String s2 = &quot;b&quot;;</span><br><span class="line">String s3 = &quot;ab&quot;;</span><br><span class="line">String s4 = s1 + s2;</span><br><span class="line">System.out.println(s3 == s4);</span><br></pre></td></tr></table></figure>
-<p>则s1+s2从字节码的角度而言，约等于</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">StringBuilder s = new StringBuilder();</span><br><span class="line">s.append(&quot;a&quot;)</span><br><span class="line">s.append(&quot;b&quot;)</span><br><span class="line">s.toString()   //约等于 new String(&quot;ab&quot;)</span><br></pre></td></tr></table></figure>
-<p>s3指向字符串常量池的字符串常量ab，s4指向一个string对象。</p>
-<h2 id="append与-对比"><a href="#append与-对比" class="headerlink" title="append与+对比"></a>append与+对比</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public void method1(int highLevel)&#123;</span><br><span class="line">    String src = &quot;&quot;;</span><br><span class="line">    for(int i = 0;i &lt; highLevel;i++)&#123;</span><br><span class="line">        src = src + &quot;a&quot;;//每次循环都会创建一个StringBuilder、String</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void method2(int highLevel)&#123;</span><br><span class="line">    //只需要创建一个StringBuilder</span><br><span class="line">    StringBuilder src = new StringBuilder();</span><br><span class="line">    for (int i = 0; i &lt; highLevel; i++) &#123;</span><br><span class="line">        src.append(&quot;a&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>显然method1中，创建过多个StringBuilder和String（调的toString方法）的对象，内存占用更大。如果进行GC，还需要花费额外的时间</p>
-<h1 id="new-String-的说明"><a href="#new-String-的说明" class="headerlink" title="new String() 的说明"></a>new String() 的说明</h1><p><strong>new String(“ab”)会创建几个对象</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String str = new String(&quot;ab&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>字节码指令</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0 new #2 &lt;java/lang/String&gt;            -&gt; 在堆中创建了一个 String 对象</span><br><span class="line">3 dup</span><br><span class="line">4 ldc #3 &lt;ab&gt;                          -&gt; 在字符串常量池中放入 “ab”（如果之前字符串常量池中没有 “ab” 的话）</span><br><span class="line">6 invokespecial #4 &lt;java/lang/String.&lt;init&gt;&gt;</span><br><span class="line">9 astore_1</span><br><span class="line">10 return</span><br></pre></td></tr></table></figure>
-<p>所以是两个对象。</p>
-<p><strong>new String(“a”) + new String(“b”) 会创建几个对象</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">*  对象1：new StringBuilder()</span><br><span class="line">*  对象2： new String(&quot;a&quot;)</span><br><span class="line">*  对象3： 常量池中的&quot;a&quot;</span><br><span class="line">*  对象4： new String(&quot;b&quot;)</span><br><span class="line">*  对象5： 常量池中的&quot;b&quot;</span><br><span class="line">*  对象6 ：StringBuilder的toString()</span><br><span class="line">*         强调一下，toString()的调用，在字符串常量池中，没有生成&quot;ab&quot;</span><br></pre></td></tr></table></figure>
-
-<h1 id="intern方法"><a href="#intern方法" class="headerlink" title="intern方法"></a>intern方法</h1><p>在调用intern方法时，如果池中已经包含了由equals(object)方法确定的与该字符串内容相等的字符串，则返回池中的字符串地址。否则，该字符串对象将被添加到池中，并返回对该字符串对象的地址</p>
-<p>在Java 6以前，字符串常量池存放在永久代。但是Java 7 之后呢，由于字符串常量池放在了堆中，执行 String.intern() 方法的时候，如果对象在堆中已经创建了，字符串常量池中就不需要再创建新的对象了，而是直接保存堆中对象的引用，也就节省了一部分的内存空间。</p>
-<p>案例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String s = new String(&quot;1&quot;);</span><br><span class="line">    s.intern();</span><br><span class="line">    String s2 = &quot;1&quot;;</span><br><span class="line">    System.out.println(s == s2);        // false:  s是String对象，s2固定指向字符串常量池中字面量1</span><br><span class="line"></span><br><span class="line">    String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;);  //字符串常量池中 没有11</span><br><span class="line">    s3.intern();                     //在java7后字符串常量池中，存放的是s3的地址</span><br><span class="line">    String s4 = &quot;11&quot;;</span><br><span class="line">    System.out.println(s3 == s4);    // java6:false java7:true</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String s3 = new String(&quot;1&quot;) + new String(&quot;1&quot;); </span><br><span class="line">    String s4 = &quot;11&quot;;</span><br><span class="line">    s3.intern();                     </span><br><span class="line">    System.out.println(s3 == s4);    //false</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void main(String[] args) &#123;</span><br><span class="line">    String s1 = new String(&quot;ab&quot;);//执行完以后，会在字符串常量池中会生成&quot;ab&quot;</span><br><span class="line"></span><br><span class="line">    s1.intern();</span><br><span class="line">    String s2 = &quot;ab&quot;;</span><br><span class="line">    System.out.println(s1 == s2);//false</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">public class StringExer2 &#123;</span><br><span class="line">    // 对象内存地址可以使用System.identityHashCode(object)方法获取</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String s1 = new String(&quot;a&quot;) + new String(&quot;b&quot;);//执行完以后，不会在字符串常量池中会生成&quot;ab&quot;</span><br><span class="line">        System.out.println(System.identityHashCode(s1));</span><br><span class="line">        s1.intern();</span><br><span class="line">        System.out.println(System.identityHashCode(s1));</span><br><span class="line">        String s2 = &quot;ab&quot;;</span><br><span class="line">        System.out.println(System.identityHashCode(s2));</span><br><span class="line">        System.out.println(s1 == s2); // true</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="intern-执行效率"><a href="#intern-执行效率" class="headerlink" title="intern 执行效率"></a>intern 执行效率</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 使用intern()测试执行效率：空间使用上</span><br><span class="line"> *</span><br><span class="line"> * 结论：对于程序中大量存在存在的字符串，尤其其中存在很多重复字符串时，使用intern()可以节省内存空间。</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class StringIntern2 &#123;</span><br><span class="line">    static final int MAX_COUNT = 1000 * 10000;</span><br><span class="line">    static final String[] arr = new String[MAX_COUNT];</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Integer[] data = new Integer[]&#123;1,2,3,4,5,6,7,8,9,10&#125;;</span><br><span class="line"></span><br><span class="line">        long start = System.currentTimeMillis();</span><br><span class="line">        for (int i = 0; i &lt; MAX_COUNT; i++) &#123;</span><br><span class="line">//            arr[i] = new String(String.valueOf(data[i % data.length]));</span><br><span class="line">            arr[i] = new String(String.valueOf(data[i % data.length])).intern();</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        long end = System.currentTimeMillis();</span><br><span class="line">        System.out.println(&quot;花费的时间为：&quot; + (end - start));</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            Thread.sleep(1000000);</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.gc();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>直接 new String ：由于每个 String 对象都是 new 出来的，所以程序需要维护大量存放在堆空间中的 String 实例，程序内存占用也会变高。而使用 intern() 方法：由于数组中字符串的引用都指向字符串常量池中的字符串，所以程序需要维护的 String 对象更少，内存占用也更低</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/posts/ba15c230/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -789,156 +894,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/posts/13cb3a0e/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Magic">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Welcome">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/13cb3a0e/" class="post-title-link" itemprop="url">类加载子系统</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-05-07 15:28:09" itemprop="dateCreated datePublished" datetime="2024-05-07T15:28:09+08:00">2024-05-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-05-09 16:09:48" itemprop="dateModified" datetime="2024-05-09T16:09:48+08:00">2024-05-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="类加载子系统作用"><a href="#类加载子系统作用" class="headerlink" title="类加载子系统作用"></a>类加载子系统作用</h2><ol>
-<li>类加载子系统负责从文件系统或者网络中加载Class文件</li>
-<li>ClassLoader只负责class文件的加载，至于它是否可以运行，由执行引擎决定</li>
-<li>加载的类信息存放于一块称为方法区的内存空间。除了类的信息外，方法区中还会存放**运行时常量池信息(Constant pool)**，可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/13cb3a0e/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/posts/866be044/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Magic">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Welcome">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/posts/866be044/" class="post-title-link" itemprop="url">java与jvm</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-04-30 13:12:16" itemprop="dateCreated datePublished" datetime="2024-04-30T13:12:16+08:00">2024-04-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-05-07 15:29:50" itemprop="dateModified" datetime="2024-05-07T15:29:50+08:00">2024-05-07</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="JDK-JRE-JVM是什么"><a href="#JDK-JRE-JVM是什么" class="headerlink" title="JDK,JRE,JVM是什么"></a>JDK,JRE,JVM是什么</h2><p>Java是一门编程语言。而JDK是Java开发工具包,是整个 Java 开发的核心。它提供了 Java 的开发环境，JAVA API类库(都在lib目录下打包成了jar)，以及一些好用的小工具(有<code>javac.exe</code>,<code>javap.exe</code>，可以在<code>java/jdk/bin/</code>目录下查看)和 Java的运行环境</p>
-<p>而其中运行时环境就是我们说的<strong>JRE</strong>。JRE主要包含两个部分，<strong>jvm 的标准实现和 Java 的一些基本类库</strong>。</p>
-<p><strong>JVM</strong>——我们耳熟能详的 Java 虚拟机。它只认识 xxx.class 这种类型的文件，它能够将 class 文件中的字节码指令进行识别并调用操作系统向上的 API 完成动作。所以说，jvm 是 Java 能够跨平台的核心。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/posts/866be044/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1008,7 +963,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
